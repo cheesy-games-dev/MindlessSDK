@@ -1,0 +1,16 @@
+{
+  "name": "com.freakycheesy.analog-sdk",
+  "displayName": "AnalogSDK",
+  "version": "2",
+  "description": "Analog SDK is a Universal Modding SDK that works with project inspired by the Marrow SDK, Uses Addressables and UltEvents to provide a powerful and flexible modding system.",
+  "author": {
+    "name": "freakycheesy",
+    "email": "cheesygamesdev@gmail.com"
+  },
+  "dependencies": {
+    "com.unity.addressables": "1.22.2",
+    "com.kybernetik.ultevents": "3.0.5"
+  },
+  "license": "MIT",
+  "hideInEditor": false
+}

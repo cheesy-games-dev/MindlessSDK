@@ -1,0 +1,17 @@
+{
+  "name": "com.coolkidstan.scene-zones",
+  "description": "Scene Zone system for unity",
+  "version": "1.1.2",
+  "unity": "2021.3",
+  "displayName": "Scene Zones",
+  "hideInEditor": false,
+  "dependencies": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/StanLeeBOY/Unity-Scene-Zones"
+  },
+  "author": {
+    "name": "coolkidstan"
+  }
+}
