@@ -29,22 +29,23 @@ namespace AnalogSDK
             }
         }
 
-        public void SpawnCrate()
-        {
-            if (canSpawn)
-            {
+        public GameObject SpawnCrate() {
+            if (canSpawn) {
                 spawnedCrate = Instantiate(selectedCrate.CrateSpawnable, transform.position, transform.rotation);
                 OnSpawnedCrate?.Invoke(spawnedCrate);
                 Debug.Log($"Spawned crate: {selectedCrate.CrateSpawnable.name}.");
             }
-            else
-            {
-                if(spawnedCrate) Debug.LogWarning("A crate has already been spawned. Only one crate can be spawned.");
-                else Debug.LogWarning("No crate selected or crate prefab is missing.");
+            else {
+                if (spawnedCrate && canSpawnOnce)
+                    Debug.LogWarning("A crate has already been spawned. Only one crate can be spawned.");
+                else
+                    Debug.LogWarning("No crate selected or crate prefab is missing.");
             }
 
-            if(canSpawnOnce)
+            if (canSpawnOnce)
                 Destroy(gameObject);
+
+            return spawnedCrate;
         }
 
 
