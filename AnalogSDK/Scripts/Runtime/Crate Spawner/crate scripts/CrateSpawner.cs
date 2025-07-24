@@ -2,11 +2,9 @@ using UltEvents;
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace AnalogSDK
-{
-    public class CrateSpawner : MonoBehaviour
-    {
-        public static List<CrateSpawner> CrateSpawners;
+namespace AnalogSDK {
+    public class CrateSpawner : MonoBehaviour {
+        public static List<CrateSpawner> CrateSpawners = new();
         public Crate selectedCrate;
         public string barcodeInput;
         public bool autoSpawn = true;
@@ -21,13 +19,11 @@ namespace AnalogSDK
         private MeshRenderer meshRenderer;
         private GameObject combinedMeshObject;
 
-        void Start()
-        {
+        void Start() {
             CrateSpawners.Add(this);
             SearchCrateByBarcode();
 
-            if (autoSpawn && canSpawn)
-            {
+            if (autoSpawn && canSpawn) {
                 SpawnCrate();
             }
         }
@@ -62,29 +58,22 @@ namespace AnalogSDK
         }
 
 
-        public void SearchCrateByBarcode()
-        {
-            if (selectedCrate == null && !string.IsNullOrEmpty(barcodeInput))
-            {
-                if (selectedCrate != null && selectedCrate.Barcode == barcodeInput)
-                {
+        public void SearchCrateByBarcode() {
+            if (selectedCrate == null && !string.IsNullOrEmpty(barcodeInput)) {
+                if (selectedCrate != null && selectedCrate.Barcode == barcodeInput) {
                     Debug.Log($"Selected crate with barcode: {selectedCrate.Barcode}");
                 }
-                else
-                {
+                else {
                     Debug.LogWarning("Crate with this barcode not found.");
                 }
             }
-            else if (selectedCrate != null)
-            {
+            else if (selectedCrate != null) {
                 barcodeInput = selectedCrate.Barcode;
             }
         }
 
-        private void VisualizeCombinedMesh()
-        {
-            if (combinedMeshObject == null)
-            {
+        private void VisualizeCombinedMesh() {
+            if (combinedMeshObject == null) {
                 combinedMeshObject = new GameObject("CombinedMeshObject");
                 combinedMeshObject.transform.SetParent(transform);
 
@@ -98,10 +87,8 @@ namespace AnalogSDK
             combinedMeshObject.transform.rotation = transform.rotation;
         }
 
-        private void OnDrawGizmos()
-        {
-            if (selectedCrate != null && selectedCrate.combinedMesh != null)
-            {
+        private void OnDrawGizmos() {
+            if (selectedCrate != null && selectedCrate.combinedMesh != null) {
                 Gizmos.color = selectedCrate.gizmoColor;
 
                 Gizmos.DrawMesh(selectedCrate.combinedMesh, transform.position, transform.rotation);
@@ -111,17 +98,14 @@ namespace AnalogSDK
                 Gizmos.DrawWireCube(transform.position + meshBounds.center, meshBounds.size);
             }
 
-            if (!gizmoLogged)
-            {
+            if (!gizmoLogged) {
                 Debug.Log("Gizmo: Showing center of CrateSpawner.");
                 gizmoLogged = true;
             }
         }
 
-        private void OnValidate()
-        {
-            if (!Application.isPlaying)
-            {
+        private void OnValidate() {
+            if (!Application.isPlaying) {
                 SearchCrateByBarcode();
             }
         }
