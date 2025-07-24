@@ -7,12 +7,12 @@ namespace AnalogSDK
     {
         public Crate selectedCrate;
         public string barcodeInput;
-        private GameObject spawnedCrate;
+        public GameObject spawnedCrate;
         public bool autoSpawn = true;
+        public bool canSpawnOnce = true;
         public UltEvent<GameObject> OnSpawnedCrate;
 
         private bool gizmoLogged = false;
-        public bool canSpawnOnce = true;
         private MeshFilter meshFilter;
         private MeshRenderer meshRenderer;
         public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && selectedCrate.CrateSpawnable;
@@ -45,6 +45,11 @@ namespace AnalogSDK
             if (canSpawnOnce)
                 Destroy(gameObject);
 
+            return spawnedCrate;
+        }
+
+        public GameObject DestroyCrate() {
+            Destroy(spawnedCrate);
             return spawnedCrate;
         }
 
