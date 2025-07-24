@@ -7,16 +7,15 @@ namespace AnalogSDK
     {
         public Crate selectedCrate;
         public string barcodeInput;
-        public GameObject spawnedCrate;
         public bool autoSpawn = true;
         public bool canSpawnOnce = true;
         public UltEvent<GameObject> OnSpawnedCrate;
+        public GameObject spawnedCrate;
+        public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && selectedCrate.CrateSpawnable;
 
         private bool gizmoLogged = false;
         private MeshFilter meshFilter;
         private MeshRenderer meshRenderer;
-        public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && selectedCrate.CrateSpawnable;
-
         private GameObject combinedMeshObject;
 
         void Start()
