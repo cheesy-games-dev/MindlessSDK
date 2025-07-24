@@ -43,7 +43,8 @@ namespace AnalogSDK
                 else Debug.LogWarning("No crate selected or crate prefab is missing.");
             }
 
-            //Destroy(gameObject);
+            if(canSpawnOnce)
+                Destroy(gameObject);
         }
 
 
