@@ -5,6 +5,7 @@ namespace AnalogSDK
 {
     public class CrateSpawner : MonoBehaviour
     {
+        public static List<CrateSpawner> CrateSpawners;
         public Crate selectedCrate;
         public string barcodeInput;
         public bool autoSpawn = true;
@@ -13,6 +14,7 @@ namespace AnalogSDK
         public GameObject spawnedCrate;
         public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && selectedCrate.CrateSpawnable;
 
+        public static UltEvent<CrateSpawner, GameObject> OnCrateSpawnerSpawn;
         private bool gizmoLogged = false;
         private MeshFilter meshFilter;
         private MeshRenderer meshRenderer;
@@ -20,6 +22,7 @@ namespace AnalogSDK
 
         void Start()
         {
+            CrateSpawners.Add(this);
             SearchCrateByBarcode();
 
             if (autoSpawn && canSpawn)
@@ -28,10 +31,15 @@ namespace AnalogSDK
             }
         }
 
+        void OnDestroy() {
+            CrateSpawners.Remove(this);
+        }
+
         public GameObject SpawnCrate() {
             if (canSpawn) {
                 spawnedCrate = Instantiate(selectedCrate.CrateSpawnable, transform.position, transform.rotation);
                 OnSpawnedCrate?.Invoke(spawnedCrate);
+                OnCrateSpawnerSpawn?.Invoke(this, spawnedCrate);
                 Debug.Log($"Spawned crate: {selectedCrate.CrateSpawnable.name}.");
             }
             else {
