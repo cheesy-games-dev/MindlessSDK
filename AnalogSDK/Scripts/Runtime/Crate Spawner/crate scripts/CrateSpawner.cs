@@ -19,7 +19,7 @@ namespace AnalogSDK
 
         private GameObject combinedMeshObject;
 
-        void Update()
+        void Start()
         {
             SearchCrateByBarcode();
 
