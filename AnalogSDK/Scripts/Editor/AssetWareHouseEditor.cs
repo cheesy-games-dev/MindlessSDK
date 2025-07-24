@@ -46,18 +46,18 @@ namespace AnalogSDK.Editor
 
             foreach (var crate in filteredCrates)
             {
-                if (GUILayout.Button($"Create {crate.Title} Spawner"))
-                {
+                
+
+                GUILayout.BeginVertical();
+
+                GUILayout.Label(crate.Title, EditorStyles.boldLabel);
+
+                if (GUILayout.Button($"Create {crate.Title} Spawner")) {
                     CreateCrateSpawner(crate);
                 }
+                GUILayout.Label(crate.Description);
 
-                GUILayout.BeginHorizontal();
-
-                GUILayout.Label(crate.Title, EditorStyles.boldLabel, GUILayout.Width(200));
-
-                GUILayout.Label(crate.Description, GUILayout.Width(300));
-
-                GUILayout.EndHorizontal();
+                GUILayout.EndVertical();
             }
         }
 
