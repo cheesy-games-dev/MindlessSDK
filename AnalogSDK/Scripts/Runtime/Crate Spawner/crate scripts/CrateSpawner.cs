@@ -5,13 +5,13 @@ using System.Collections.Generic;
 namespace AnalogSDK {
     public class CrateSpawner : MonoBehaviour {
         public static List<CrateSpawner> CrateSpawners = new();
-        public Crate selectedCrate;
+        public SpawnableCrate selectedCrate;
         public string barcodeInput;
         public bool autoSpawn = true;
         public bool canSpawnOnce = true;
         public UltEvent<GameObject> OnSpawnedCrate;
         public GameObject spawnedCrate;
-        public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && selectedCrate.CrateSpawnable;
+        public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && selectedCrate.CrateObject;
 
         public static UltEvent<CrateSpawner, GameObject> OnCrateSpawnerSpawn;
         private bool gizmoLogged = false;
@@ -34,10 +34,10 @@ namespace AnalogSDK {
 
         public GameObject SpawnCrate() {
             if (canSpawn) {
-                spawnedCrate = Instantiate(selectedCrate.CrateSpawnable, transform.position, transform.rotation);
+                spawnedCrate = Instantiate(selectedCrate.CrateObject as GameObject, transform.position, transform.rotation);
                 OnSpawnedCrate?.Invoke(spawnedCrate);
                 OnCrateSpawnerSpawn?.Invoke(this, spawnedCrate);
-                Debug.Log($"Spawned crate: {selectedCrate.CrateSpawnable.name}.");
+                Debug.Log($"Spawned crate: {selectedCrate.CrateObject.name}.");
             }
             else {
                 if (spawnedCrate && canSpawnOnce)

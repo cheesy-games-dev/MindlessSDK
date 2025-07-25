@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace AnalogSDK.Editor
 {
-    [CustomEditor(typeof(Crate))]
+    [CustomEditor(typeof(Crate), true)]
     public class CrateEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
@@ -11,11 +11,12 @@ namespace AnalogSDK.Editor
             base.OnInspectorGUI();
 
             Crate crate = (Crate)target;
-
+            var spawnable = crate as SpawnableCrate;
+            if(spawnable)
             if (GUILayout.Button("Generate and Save Combined Mesh"))
             {
-                crate.RegenerateCombinedMesh();
-                crate.SaveMeshToFolder();
+                    spawnable.RegenerateCombinedMesh();
+                    spawnable.SaveMeshToFolder();
             }
         }
     }

@@ -3,35 +3,21 @@ using UnityEngine;
 using System.Collections.Generic;
 namespace AnalogSDK.Editor
 {
-    public class PalletCrateEditorWindow : EditorWindow
+    public class PallletWindow : EditorWindow
     {
-        private string palletTitle = "New Pallet";
-        private string palletBarcode = "Barcode";
-        private string palletAuthor = "Author";
-        private string palletVersion = "1.0";
-        private static Pallet selectedPallet;
-
-        private string crateTitle = "New Crate";
-        private string crateBarcode = "emptynullbarcode";
-        private string crateDescription = "Description of the crate.";
-        private List<string> crateTags = new List<string>();
-        private string newTag = "";
-        private GameObject CrateSpawnable;
-
-        private Vector2 scrollPosition;
-        private bool isCreatingCrate = false;
-
-        [MenuItem("ANALOG SDK/Editor/SpawnableCrates")]
+        public string palletTitle = "New Pallet";
+        public string palletBarcode = "Barcode";
+        public string palletAuthor = "Author";
+        public string palletVersion = "1.0";
+        public static Pallet selectedPallet;
+        [MenuItem("AnalogSDK/Editor/Pallet")]
         public static void OpenWindow()
         {
-            PalletCrateEditorWindow window = GetWindow<PalletCrateEditorWindow>("Pallet & Crate Editor");
+            PallletWindow window = GetWindow<PallletWindow>("Pallet Editor");
             window.Show();
         }
-
-        private void OnGUI()
+        public void OnGUI()
         {
-            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
-
             EditorGUILayout.Space();
             GUILayout.Label("Pallet Settings", EditorStyles.boldLabel);
             palletTitle = EditorGUILayout.TextField("Pallet Title", palletTitle);
@@ -42,36 +28,9 @@ namespace AnalogSDK.Editor
             {
                 CreatePallet();
             }
-
-            EditorGUILayout.Space();
-            GUILayout.Label("Select or Create Crate", EditorStyles.boldLabel);
-
-            if (selectedPallet != null)
-            {
-                GUILayout.Label("Selected Pallet: " + selectedPallet.Title);
-
-                if (GUILayout.Button("Create Crate"))
-                {
-                    isCreatingCrate = true;
-                }
-
-                if (isCreatingCrate)
-                {
-                    CreateCrateUI();
-                }
-            }
-            else
-            {
-                if (GUILayout.Button("Select Pallet"))
-                {
-                    SelectPallet();
-                }
-            }
-
-            EditorGUILayout.EndScrollView();
         }
 
-        private void CreatePallet()
+        public void CreatePallet()
         {
             string path = "Assets/SDK/pallets";
             if (!System.IO.Directory.Exists(path))
@@ -93,7 +52,7 @@ namespace AnalogSDK.Editor
             selectedPallet = newPallet;
         }
 
-        private void SelectPallet()
+        public void SelectPallet()
         {
             string path = "Assets/SDK/pallets";
             string[] palletGuids = AssetDatabase.FindAssets("t:Pallet", new[] { path });
@@ -110,16 +69,66 @@ namespace AnalogSDK.Editor
             menu.ShowAsContext();
         }
 
-        private void SelectPalletFromMenu(Pallet pallet)
+        public void SelectPalletFromMenu(Pallet pallet)
         {
             selectedPallet = pallet;
         }
+    }
+    
+    public class PalletCrateEditorWindow : EditorWindow
+    {
+        protected static PallletWindow pallletWindow;
+        protected string crateTitle = "New Crate";
+        protected string crateBarcode = "emptynullbarcode";
+        protected string crateDescription = "Description of the crate.";
+        protected List<string> crateTags = new List<string>();
+        protected string newTag = "";
+        protected Object ObjectReference;
 
-        private void CreateCrateUI()
+        protected bool isCreatingCrate = false;
+
+
+        [MenuItem("AnalogSDK/Editor/Spawnable Crates")]
+        public static void OpenWindow()
+        {
+            PalletCrateEditorWindow window = GetWindow<PalletCrateEditorWindow>("Spawnable Crate Editor");
+            pallletWindow = new();
+            window.Show();
+        }
+
+        public virtual void OnGUI()
+        {
+            pallletWindow ??= new();
+            pallletWindow.OnGUI();
+            EditorGUILayout.Space();
+            GUILayout.Label("Select or Create Crate", EditorStyles.boldLabel);
+            if (GUILayout.Button("Select Pallet"))
+            {
+                pallletWindow.SelectPallet();
+            }
+            if (PallletWindow.selectedPallet != null)
+            {
+                GUILayout.Label("Selected Pallet: " + PallletWindow.selectedPallet.Title);
+
+                if (GUILayout.Button("Create Crate"))
+                {
+                    isCreatingCrate = true;
+                }
+
+                if (isCreatingCrate)
+                {
+                    CreateCrateUI();
+                }
+            }
+
+            EditorGUILayout.EndScrollView();
+        }
+        public static bool LevelCrate = false;
+        public virtual void CreateCrateUI()
         {
             EditorGUILayout.Space();
             GUILayout.Label("Crate Settings", EditorStyles.boldLabel);
-
+            LevelCrate = GUILayout.Toggle(LevelCrate, "Is Level Crate");
             crateTitle = EditorGUILayout.TextField("Crate Title", crateTitle);
             crateDescription = EditorGUILayout.TextField("Crate Description", crateDescription);
 
@@ -146,7 +155,7 @@ namespace AnalogSDK.Editor
                 }
             }
 
-            CrateSpawnable = (GameObject)EditorGUILayout.ObjectField("Select Crate Prefab", CrateSpawnable, typeof(GameObject), false);
+            ObjectReference = EditorGUILayout.ObjectField("Select Crate Prefab", ObjectReference, typeof(Object), false);
 
             if (GUILayout.Button("Save Crate"))
             {
@@ -159,27 +168,26 @@ namespace AnalogSDK.Editor
             }
         }
 
-        private void SaveCrate()
+        public virtual void SaveCrate()
         {
-            if (selectedPallet == null)
+            if (PallletWindow.selectedPallet == null)
             {
                 EditorUtility.DisplayDialog("Error", "Please select or create a pallet first.", "OK");
                 return;
             }
 
 
-            crateBarcode = $"{crateTitle}.{selectedPallet.Author}.{selectedPallet.Version}";
+            crateBarcode = $"{crateTitle}.{PallletWindow.selectedPallet.Author}.{PallletWindow.selectedPallet.Version}";
 
-            Crate newCrate = ScriptableObject.CreateInstance<Crate>();
+            Crate newCrate = LevelCrate ? CreateInstance<LevelCrate>() : CreateInstance<SpawnableCrate>();
             newCrate.Title = crateTitle;
             newCrate.Barcode = crateBarcode;
             newCrate.Description = crateDescription;
             newCrate.Tags = crateTags.ToArray();
 
+            newCrate.CrateObject = ObjectReference;
 
-            newCrate.CrateSpawnable = CrateSpawnable;
-
-            string cratePath = "Assets/SDK/pallets/" + selectedPallet.Title + "_Crates";
+            string cratePath = "Assets/SDK/pallets/" + PallletWindow.selectedPallet.Title + "_Crates";
             if (!System.IO.Directory.Exists(cratePath))
             {
                 System.IO.Directory.CreateDirectory(cratePath);
@@ -189,21 +197,21 @@ namespace AnalogSDK.Editor
             AssetDatabase.SaveAssets();
 
 
-            if (selectedPallet.Crates == null)
+            if (PallletWindow.selectedPallet.Crates == null)
             {
-                selectedPallet.Crates = new Crate[] { newCrate };
+                PallletWindow.selectedPallet.Crates = new Crate[] { newCrate };
             }
             else
             {
-                List<Crate> crateList = new List<Crate>(selectedPallet.Crates) { newCrate };
-                selectedPallet.Crates = crateList.ToArray();
+                List<Crate> crateList = new List<Crate>(PallletWindow.selectedPallet.Crates) { newCrate };
+                PallletWindow.selectedPallet.Crates = crateList.ToArray();
             }
 
-            EditorUtility.SetDirty(selectedPallet);
+            EditorUtility.SetDirty(PallletWindow.selectedPallet);
             AssetDatabase.SaveAssets();
 
             isCreatingCrate = false;
-            EditorUtility.DisplayDialog("Crate Created", $"Crate {newCrate.Title} has been created for pallet {selectedPallet.Title}.", "OK");
+            EditorUtility.DisplayDialog("Crate Created", $"Crate {newCrate.Title} has been created for pallet {PallletWindow.selectedPallet.Title}.", "OK");
         }
     }
 }

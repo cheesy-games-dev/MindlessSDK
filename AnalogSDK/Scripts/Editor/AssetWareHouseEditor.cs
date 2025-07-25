@@ -4,20 +4,20 @@ using System.Linq;
 
 namespace AnalogSDK.Editor
 {
-    public class AssetWareHouse : EditorWindow
+    public class AssetWareHouseEditor : EditorWindow
     {
         [SerializeField] public static Material Void;
         [SerializeField] public static string SavedMeshesPath = "Assets/Analog SDK/Crates";
 
-        public static AssetWareHouse Instance;
+        public static AssetWareHouseEditor Instance;
         private string searchQuery = "";
         private Crate[] allCrates;
         private Crate[] filteredCrates;
 
-        [MenuItem("ANALOG SDK/AssetWareHouse")]
+        [MenuItem("AnalogSDK/AssetWareHouse")]
         public static void ShowWindow()
         {
-            GetWindow<AssetWareHouse>("AssetWareHouse");
+            GetWindow<AssetWareHouseEditor>("AssetWareHouse");
         }
 
         private void OnEnable()
@@ -46,14 +46,15 @@ namespace AnalogSDK.Editor
 
             foreach (var crate in filteredCrates)
             {
-                
+                var spawnable = crate as SpawnableCrate;
+                if (!spawnable) continue;
 
                 GUILayout.BeginVertical();
 
                 GUILayout.Label(crate.Title, EditorStyles.boldLabel);
 
                 if (GUILayout.Button($"Create {crate.Title} Spawner")) {
-                    CreateCrateSpawner(crate);
+                    CreateCrateSpawner(spawnable);
                 }
                 GUILayout.Label(crate.Description);
 
@@ -61,7 +62,7 @@ namespace AnalogSDK.Editor
             }
         }
 
-        private void CreateCrateSpawner(Crate selectedCrate)
+        private void CreateCrateSpawner(SpawnableCrate selectedCrate)
         {
             GameObject spawnerObject = new GameObject($"{selectedCrate.Title} Spawner");
 

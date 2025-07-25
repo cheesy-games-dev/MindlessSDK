@@ -7,7 +7,7 @@ using UnityEngine;
 namespace AnalogSDK
 {
     [CreateAssetMenu(menuName = "Crate")]
-    public class Crate : ScriptableObject
+    public abstract class Crate : ScriptableObject
     {
         public string Barcode = "THISWILLAUTOCREATE";
         public string Title;
@@ -15,22 +15,26 @@ namespace AnalogSDK
         public bool Redacted = false;
         public string[] Tags;
 
-        public GameObject CrateSpawnable;
+        public Object CrateObject;
 
         [HideInInspector] public Mesh combinedMesh;
 
         public Color gizmoColor = Color.white;
+    }
 
+    [CreateAssetMenu(menuName = "AnalogSDK/Spawnable")]
+    public class SpawnableCrate : Crate
+    {
 #if UNITY_EDITOR
         public void RegenerateCombinedMesh()
         {
-            if (CrateSpawnable == null)
+            if (CrateObject == null)
             {
                 Debug.LogWarning("No crate prefab set.");
                 return;
             }
 
-            MeshFilter[] meshFilters = CrateSpawnable.GetComponentsInChildren<MeshFilter>();
+            MeshFilter[] meshFilters = (CrateObject as GameObject).GetComponentsInChildren<MeshFilter>();
             CombineInstance[] combine = new CombineInstance[meshFilters.Length];
 
             int i = 0;
@@ -54,9 +58,9 @@ namespace AnalogSDK
                 return;
             }
 
-            string meshPath = $"{AssetWareHouse.SavedMeshesPath}/{name}_CombinedMesh.asset";
+            string meshPath = $"{AssetWareHouseEditor.SavedMeshesPath}/{name}_CombinedMesh.asset";
 
-            if (!AssetDatabase.IsValidFolder(AssetWareHouse.SavedMeshesPath))
+            if (!AssetDatabase.IsValidFolder(AssetWareHouseEditor.SavedMeshesPath))
             {
                 AssetDatabase.CreateFolder("Assets/Analog SDK", "Crates");
             }
@@ -70,7 +74,7 @@ namespace AnalogSDK
         [UnityEditor.Callbacks.DidReloadScripts]
         private static void OnCrateSelected()
         {
-            if (Selection.activeObject is Crate crate)
+            if (Selection.activeObject is SpawnableCrate crate)
             {
                 crate.RegenerateCombinedMesh();
             }

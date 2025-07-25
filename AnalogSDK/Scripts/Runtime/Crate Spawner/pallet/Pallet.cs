@@ -11,6 +11,5 @@ namespace AnalogSDK
         public string Author;
         public string Version;
         public Crate[] Crates;
-        public LevelCrate[] LevelCrates;
     }
 }
