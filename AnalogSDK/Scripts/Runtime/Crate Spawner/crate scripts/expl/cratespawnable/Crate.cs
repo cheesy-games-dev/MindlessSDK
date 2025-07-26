@@ -1,12 +1,10 @@
 #if UNITY_EDITOR
-using AnalogSDK.Editor;
 using UnityEditor;
 #endif
 using UnityEngine;
 
 namespace AnalogSDK
 {
-    [CreateAssetMenu(menuName = "Crate")]
     public abstract class Crate : ScriptableObject
     {
         public string Barcode = "THISWILLAUTOCREATE";
@@ -22,7 +20,7 @@ namespace AnalogSDK
         public Color gizmoColor = Color.white;
     }
 
-    [CreateAssetMenu(menuName = "AnalogSDK/Spawnable")]
+    [CreateAssetMenu(menuName = "AnalogSDK/Spawnable Crate")]
     public class SpawnableCrate : Crate
     {
 #if UNITY_EDITOR
@@ -58,9 +56,9 @@ namespace AnalogSDK
                 return;
             }
 
-            string meshPath = $"{AssetWareHouseEditor.SavedMeshesPath}/{name}_CombinedMesh.asset";
+            string meshPath = $"{AssetWarehouse.SavedMeshesPath}/{name}_CombinedMesh.asset";
 
-            if (!AssetDatabase.IsValidFolder(AssetWareHouseEditor.SavedMeshesPath))
+            if (!AssetDatabase.IsValidFolder(AssetWarehouse.SavedMeshesPath))
             {
                 AssetDatabase.CreateFolder("Assets/Analog SDK", "Crates");
             }

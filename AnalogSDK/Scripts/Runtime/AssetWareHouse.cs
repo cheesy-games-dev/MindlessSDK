@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,9 +8,21 @@ using UnityEngine.SceneManagement;
 
 namespace AnalogSDK
 {
-    public class AssetWareHouse : MonoBehaviour
+    public class AssetWarehouse : MonoBehaviour
     {
-        public static AssetWareHouse Instance { get; private set; }
+        public const string SavedMeshesPath = "Assets/Analog SDK/Crates";
+        public static bool ready
+        {
+            get
+            {
+                bool ready = Instance != null && Instance.Pallets.Count > 0;
+                if (ready) OnReady?.Invoke();
+                    return ready;
+            }
+        }
+        public static AssetWarehouse Instance { get; private set; }
+        public static Action OnReady;
+        public Action<Pallet> OnLoadedPallet;
         public AssetLabelReference palletLabel = new()
         {
             labelString = "pallet"
@@ -17,9 +30,18 @@ namespace AnalogSDK
         public List<Pallet> Pallets = new();
         public List<SpawnableCrate> SpawnableCrates = new();
         public List<LevelCrate> LevelCrates = new();
-
+        private void OnValidate()
+        {
+            Instance = this;
+        }
         private void Start()
         {
+            if (Instance)
+            {
+                Debug.LogWarning("An instance of AssetWareHouse already exists. Destroying the new instance.");
+                Destroy(this.gameObject);
+                return;
+            }
             Instance = this;
             DontDestroyOnLoad(Instance);
             LoadMods();
@@ -47,10 +69,22 @@ namespace AnalogSDK
             {
                 SpawnableCrates.AddRange(pallet.Crates.Cast<SpawnableCrate>());
             }
+            catch (Exception e)
+            {
+                Debug.Log($"No Spawnable Crates in {pallet}. Exception: {e.Message}");
+            }
             finally
             {
-                LevelCrates.AddRange(pallet.Crates.Cast<LevelCrate>());
+                try
+                {
+                    LevelCrates.AddRange(pallet.Crates.Cast<LevelCrate>());
+                }
+                catch (Exception e)
+                {
+                    Debug.Log($"No Level Crates in {pallet}. Exception: {e.Message}");
+                }
             }
+            OnLoadedPallet?.Invoke(pallet);
             Pallets.Sort();
             SpawnableCrates.Sort();
             LevelCrates.Sort();
