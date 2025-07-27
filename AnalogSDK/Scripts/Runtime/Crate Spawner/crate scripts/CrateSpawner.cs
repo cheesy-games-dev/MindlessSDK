@@ -5,13 +5,13 @@ using System.Collections.Generic;
 namespace AnalogSDK {
     public class CrateSpawner : MonoBehaviour {
         public static List<CrateSpawner> CrateSpawners = new();
-        public SpawnableCrate selectedCrate;
+        public Barcode barcode = new();
         public string barcodeInput;
         public bool autoSpawn = true;
         public bool canSpawnOnce = true;
         public UltEvent<GameObject> OnSpawnedCrate;
         public GameObject spawnedCrate;
-        public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && selectedCrate.CrateObject;
+        public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && barcode.crate.CrateObject;
 
         public static UltEvent<CrateSpawner, GameObject> OnCrateSpawnerSpawn;
         private bool gizmoLogged = false;
@@ -21,8 +21,7 @@ namespace AnalogSDK {
 
         void Start() {
             CrateSpawners.Add(this);
-            SearchCrateByBarcode();
-
+            AssetWarehouse.GetCrateByBarcode(ref barcode);
             if (autoSpawn && canSpawn) {
                 SpawnCrate();
             }
@@ -34,10 +33,10 @@ namespace AnalogSDK {
 
         public GameObject SpawnCrate() {
             if (canSpawn) {
-                spawnedCrate = Instantiate(selectedCrate.CrateObject as GameObject, transform.position, transform.rotation);
+                spawnedCrate = Instantiate(barcode.crate.CrateObject as GameObject, transform.position, transform.rotation);
                 OnSpawnedCrate?.Invoke(spawnedCrate);
                 OnCrateSpawnerSpawn?.Invoke(this, spawnedCrate);
-                Debug.Log($"Spawned crate: {selectedCrate.CrateObject.name}.");
+                Debug.Log($"Spawned crate: {barcode.crate.name}.");
             }
             else {
                 if (spawnedCrate && canSpawnOnce)
@@ -57,21 +56,6 @@ namespace AnalogSDK {
             return spawnedCrate;
         }
 
-
-        public void SearchCrateByBarcode() {
-            if (selectedCrate == null && !string.IsNullOrEmpty(barcodeInput)) {
-                if (selectedCrate != null && selectedCrate.Barcode == barcodeInput) {
-                    Debug.Log($"Selected crate with barcode: {selectedCrate.Barcode}");
-                }
-                else {
-                    Debug.LogWarning("Crate with this barcode not found.");
-                }
-            }
-            else if (selectedCrate != null) {
-                barcodeInput = selectedCrate.Barcode;
-            }
-        }
-
         private void VisualizeCombinedMesh() {
             if (combinedMeshObject == null) {
                 combinedMeshObject = new GameObject("CombinedMeshObject");
@@ -81,20 +65,20 @@ namespace AnalogSDK {
                 meshRenderer = combinedMeshObject.AddComponent<MeshRenderer>();
             }
 
-            meshFilter.mesh = selectedCrate.combinedMesh;
+            meshFilter.mesh = barcode.crate.combinedMesh;
 
             combinedMeshObject.transform.position = transform.position;
             combinedMeshObject.transform.rotation = transform.rotation;
         }
 
         private void OnDrawGizmos() {
-            if (selectedCrate != null && selectedCrate.combinedMesh != null) {
-                Gizmos.color = selectedCrate.gizmoColor;
+            if (barcode.crate != null && barcode.crate.combinedMesh != null) {
+                Gizmos.color = barcode.crate.gizmoColor;
 
-                Gizmos.DrawMesh(selectedCrate.combinedMesh, transform.position, transform.rotation);
+                Gizmos.DrawMesh(barcode.crate.combinedMesh, transform.position, transform.rotation);
 
                 Gizmos.color = Color.white;
-                Bounds meshBounds = selectedCrate.combinedMesh.bounds;
+                Bounds meshBounds = barcode.crate.combinedMesh.bounds;
                 Gizmos.DrawWireCube(transform.position + meshBounds.center, meshBounds.size);
             }
 
@@ -106,7 +90,7 @@ namespace AnalogSDK {
 
         private void OnValidate() {
             if (!Application.isPlaying) {
-                SearchCrateByBarcode();
+                AssetWarehouse.GetCrateByBarcode(ref barcode);
             }
         }
     }

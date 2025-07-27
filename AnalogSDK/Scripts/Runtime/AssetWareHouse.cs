@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
@@ -16,18 +15,18 @@ namespace AnalogSDK
             get
             {
                 bool ready = Instance != null && Instance.Pallets.Count > 0;
-                if (ready) OnReady?.Invoke();
-                    return ready;
+                return ready;
             }
         }
         public static AssetWarehouse Instance { get; private set; }
         public static Action OnReady;
-        public Action<Pallet> OnLoadedPallet;
+        public static Action<Pallet> OnLoadedPallet;
         public AssetLabelReference palletLabel = new()
         {
             labelString = "pallet"
         };
         public List<Pallet> Pallets = new();
+        public List<Crate> Crates = new();
         public List<SpawnableCrate> SpawnableCrates = new();
         public List<LevelCrate> LevelCrates = new();
         private void OnValidate()
@@ -47,6 +46,13 @@ namespace AnalogSDK
             LoadMods();
         }
 
+        public static void GetCrateByBarcode(ref Barcode barcode)
+        {
+            Barcode newBarcode = barcode;
+            newBarcode.crate = Instance.Crates.FirstOrDefault(c => c.Barcode.ToLower() == newBarcode.barcode.ToLower());
+            barcode = newBarcode;
+        }
+
         public virtual void LoadMods()
         {
             Debug.Log("Loading Mods");
@@ -54,6 +60,7 @@ namespace AnalogSDK
             SpawnableCrates.Clear();
             LevelCrates.Clear();
             Addressables.LoadAssetsAsync<Pallet>(palletLabel, LoadPallet);
+            if (ready) OnReady?.Invoke();
         }
         public virtual void LoadLevel(LevelCrate level, LoadSceneMode mode = LoadSceneMode.Single)
         {
@@ -65,6 +72,7 @@ namespace AnalogSDK
             Debug.Log($"Loaded: {pallet}");
             Debug.Log($"Loaded: {pallet.Crates}");
             Pallets.Add(pallet);
+            Crates.AddRange(pallet.Crates);
             try
             {
                 SpawnableCrates.AddRange(pallet.Crates.Cast<SpawnableCrate>());

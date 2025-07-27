@@ -19,7 +19,11 @@ namespace AnalogSDK
 
         public Color gizmoColor = Color.white;
     }
-
+    public struct Barcode
+    {
+        public string barcode;
+        public Crate crate;
+    }
     [CreateAssetMenu(menuName = "AnalogSDK/Spawnable Crate")]
     public class SpawnableCrate : Crate
     {
