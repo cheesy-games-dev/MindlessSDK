@@ -6,11 +6,10 @@ namespace AnalogSDK {
     public class CrateSpawner : MonoBehaviour {
         public static List<CrateSpawner> CrateSpawners = new();
         public Barcode barcode = new();
-        public string barcodeInput;
-        public bool autoSpawn = true;
+        public bool manual = false;
         public bool canSpawnOnce = true;
         public UltEvent<GameObject> OnSpawnedCrate;
-        public GameObject spawnedCrate;
+        [HideInInspector] public GameObject spawnedCrate;
         public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && barcode.crate.CrateObject;
 
         public static UltEvent<CrateSpawner, GameObject> OnCrateSpawnerSpawn;
@@ -22,7 +21,7 @@ namespace AnalogSDK {
         void Start() {
             CrateSpawners.Add(this);
             AssetWarehouse.GetCrateByBarcode(ref barcode);
-            if (autoSpawn && canSpawn) {
+            if (!manual && canSpawn) {
                 SpawnCrate();
             }
         }
@@ -89,9 +88,8 @@ namespace AnalogSDK {
         }
 
         private void OnValidate() {
-            if (!Application.isPlaying) {
-                AssetWarehouse.GetCrateByBarcode(ref barcode);
-            }
+            if (!Application.isPlaying && barcode.crate) barcode.barcode = barcode.crate.Barcode;
+            gameObject.name = $"Crate Spawner ({barcode.barcode})";
         }
     }
 }

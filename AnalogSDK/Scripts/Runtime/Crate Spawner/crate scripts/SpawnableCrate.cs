@@ -5,25 +5,6 @@ using UnityEngine;
 
 namespace AnalogSDK
 {
-    public abstract class Crate : ScriptableObject
-    {
-        public string Barcode = "THISWILLAUTOCREATE";
-        public string Title;
-        public string Description;
-        public bool Redacted = false;
-        public string[] Tags;
-
-        public Object CrateObject;
-
-        [HideInInspector] public Mesh combinedMesh;
-
-        public Color gizmoColor = Color.white;
-    }
-    public struct Barcode
-    {
-        public string barcode;
-        public Crate crate;
-    }
     [CreateAssetMenu(menuName = "AnalogSDK/Spawnable Crate")]
     public class SpawnableCrate : Crate
     {
@@ -64,7 +45,7 @@ namespace AnalogSDK
 
             if (!AssetDatabase.IsValidFolder(AssetWarehouse.SavedMeshesPath))
             {
-                AssetDatabase.CreateFolder("Assets/Analog SDK", "Crates");
+                AssetDatabase.CreateFolder("Assets/SDK", "meshes");
             }
 
             AssetDatabase.CreateAsset(combinedMesh, meshPath);

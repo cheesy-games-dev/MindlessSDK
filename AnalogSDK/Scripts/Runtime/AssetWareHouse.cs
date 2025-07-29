@@ -9,7 +9,7 @@ namespace AnalogSDK
 {
     public class AssetWarehouse : MonoBehaviour
     {
-        public const string SavedMeshesPath = "Assets/Analog SDK/Crates";
+        public const string SavedMeshesPath = "Assets/SDK/meshes";
         public static bool ready
         {
             get
@@ -50,7 +50,7 @@ namespace AnalogSDK
         {
             Barcode newBarcode = barcode;
             newBarcode.crate = Instance.Crates.FirstOrDefault(c => c.Barcode.ToLower() == newBarcode.barcode.ToLower());
-            barcode = newBarcode;
+            barcode = new(newBarcode.barcode, newBarcode.crate);
         }
 
         public virtual void LoadMods()
