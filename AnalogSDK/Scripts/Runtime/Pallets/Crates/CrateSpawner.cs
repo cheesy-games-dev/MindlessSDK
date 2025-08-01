@@ -3,16 +3,14 @@ using UnityEngine;
 using System.Collections.Generic;
 
 namespace AnalogSDK {
-    public class CrateSpawner : MonoBehaviour {
+    public class CrateSpawner : MonoBehaviour, ICrateBarcode {
         public static List<CrateSpawner> CrateSpawners = new();
         public Barcode<SpawnableCrate> barcode;
         public bool manual = false;
         public bool canSpawnOnce = true;
-        public UltEvent<GameObject> OnSpawnedCrate;
+        public UltEvent<CrateSpawner, GameObject> OnSpawnedCrate;
         [HideInInspector] public GameObject spawnedCrate;
         public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && barcode.crate.CrateReference;
-
-        public static UltEvent<CrateSpawner, GameObject> OnCrateSpawnerSpawn;
         private bool gizmoLogged = false;
         private MeshFilter meshFilter;
         private MeshRenderer meshRenderer;
@@ -33,8 +31,7 @@ namespace AnalogSDK {
         public GameObject SpawnCrate() {
             if (canSpawn) {
                 spawnedCrate = Instantiate(barcode.crate.CrateReference, transform.position, transform.rotation);
-                OnSpawnedCrate?.Invoke(spawnedCrate);
-                OnCrateSpawnerSpawn?.Invoke(this, spawnedCrate);
+                OnSpawnedCrate?.Invoke(this, spawnedCrate);
                 Debug.Log($"Spawned crate: {barcode.crate.name}.");
             }
             else {
@@ -86,9 +83,9 @@ namespace AnalogSDK {
                 gizmoLogged = true;
             }
         }
-
-        private void OnValidate() {
-            if (!Application.isPlaying && barcode.crate) barcode.barcode = barcode.crate.Barcode;
+        public void OnValidate()
+        {
+            if (barcode.crate) barcode.barcode = barcode.crate.Barcode;
             gameObject.name = $"Crate Spawner ({barcode.barcode})";
         }
     }

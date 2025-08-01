@@ -4,6 +4,7 @@ using UnityEngine;
 namespace AnalogSDK.Editor
 {
     [CustomEditor(typeof(Crate), true)]
+    [CanEditMultipleObjects]
     public class CrateEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()

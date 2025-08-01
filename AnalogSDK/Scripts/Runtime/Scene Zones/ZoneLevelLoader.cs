@@ -1,36 +1,23 @@
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.SceneManagement;
 using System.Collections;
+using UltEvents;
 
 namespace AnalogSDK
 {
+    [RequireComponent(typeof(LevelLoader))]
     [AddComponentMenu("Zones/Zone Items/Zone Level Loader")]
     public class ZoneLevelLoader : ZoneItem
     {
-        [SerializeField] private string sceneToLoad;
-        [SerializeField] private float delayBeforeLoad = 0f;
-        public UnityEvent beforeLoadEvent;
+        private LevelLoader LevelLoader;
         public SceneZone.TriggerOption triggerOption;
 
         public override void Trigger(SceneZone.TriggerOption option)
         {
             if (option == triggerOption)
             {
-                StartCoroutine(LoadSceneWithDelay());
+                LevelLoader = GetComponent<LevelLoader>();
+                LevelLoader.LoadLevel();
             }
-        }
-
-        private IEnumerator LoadSceneWithDelay()
-        {
-            if (beforeLoadEvent != null)
-            {
-                beforeLoadEvent.Invoke();
-            }
-
-            yield return new WaitForSeconds(delayBeforeLoad);
-
-            SceneManager.LoadScene(sceneToLoad);
         }
     }
 }

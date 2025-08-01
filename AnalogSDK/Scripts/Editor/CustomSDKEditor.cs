@@ -6,19 +6,7 @@ namespace AnalogSDK.Editor
     public class CustomSDKEditor : UnityEditor.Editor
     {
 
-        [MenuItem("GameObject/SDK/Spawner/PrefabSpawner")]
-        public static void CreatePrefabSpawner(MenuCommand command)
-        {
-            GameObject go = new GameObject("Prefab Spawner");
-
-            go.AddComponent<PrefabSpawner>();
-
-            Undo.RegisterCreatedObjectUndo(go, "Created Prefab Spawner");
-
-            Debug.Log("Created custom Prefab Spawner.");
-        }
-
-        [MenuItem("GameObject/SDK/Zones/SceneZone")]
+        [MenuItem("AnalogSDK/SDK/Zones/SceneZone")]
         public static void CreateZone(MenuCommand command)
         {
             GameObject sceneZone = new GameObject("Scene Zone");
@@ -34,7 +22,7 @@ namespace AnalogSDK.Editor
             Selection.activeObject = sceneZone;
         }
 
-        [MenuItem("GameObject/SDK/Zones/ZoneChunk")]
+        [MenuItem("AnalogSDK/SDK/Zones/ZoneChunk")]
         public static void CreateZoneChunk(MenuCommand command)
         {
             GameObject sceneZonechunk = new GameObject("Scene Chunk");
@@ -51,7 +39,7 @@ namespace AnalogSDK.Editor
             Selection.activeObject = sceneZonechunk;
         }
 
-        [MenuItem("GameObject/SDK/Crates/CrateSpawner")]
+        [MenuItem("AnalogSDK/SDK/Crates/CrateSpawner")]
         public static void CreateCrateSpawner(MenuCommand command)
         {
             GameObject go = new GameObject("Crate Spawner");
@@ -63,7 +51,7 @@ namespace AnalogSDK.Editor
             Debug.Log("Created custom Prefab Spawner.");
         }
 
-        [MenuItem("GameObject/SDK/Crates/LevelCrate")]
+        [MenuItem("AnalogSDK/SDK/Crates/LevelCrate")]
         public static void CreateLevelCrate(MenuCommand command)
         {
             GameObject go = new GameObject("Level Crate");

@@ -52,18 +52,17 @@ namespace AnalogSDK.Editor
             newPallet.Version = palletVersion;
 
             AssetDatabase.CreateAsset(newPallet, path + "/" + newPallet.Barcode + ".pallet.asset");
-            AddPalletToAddressables(newPallet);
+            //AddPalletToAddressables(newPallet);
             AssetDatabase.SaveAssets();
             selectedPallet = newPallet;
         }
-
-        private void AddPalletToAddressables(Pallet newPallet)
+        const string group_name = "Pallets";
+        public static void AddPalletToAddressables(Pallet newPallet)
         {
             //Use this object to manipulate addressables
             var settings = AddressableAssetSettingsDefaultObject.Settings;
 
-            string group_name = "pallets";
-            string label_name = "pallet";
+
             string path_to_object = AssetDatabase.GetAssetPath(newPallet);
             string custom_address = newPallet.Barcode;
 
@@ -73,7 +72,7 @@ namespace AnalogSDK.Editor
             if (settings.FindGroup(group_name) == null) settings.CreateGroup(group_name, false, false, false, settings.DefaultGroup.Schemas);
 
             //Create a Label
-            if(!settings.GetLabels().Contains(label_name)) settings.AddLabel(label_name, false);
+            if (!settings.GetLabels().Contains(AssetWarehouse.palletLabel.labelString)) settings.AddLabel(AssetWarehouse.palletLabel.labelString, false);
 
             //Make a gameobject an addressable
             AddressableAssetGroup obj = settings.FindGroup(group_name);
@@ -81,8 +80,34 @@ namespace AnalogSDK.Editor
 
             //This is the function that actually makes the object addressable
             var entry = settings.CreateOrMoveEntry(guid, obj);
-            entry.labels.Add(label_name);
+            entry.labels.Add(AssetWarehouse.palletLabel.labelString);
             entry.address = custom_address;
+
+            //You'll need these to run to save the changes!
+            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entry, true);
+            AssetDatabase.SaveAssets();
+        }
+
+        public static void RemovePalletFromAddressables(Pallet pallet)
+        {
+            //Use this object to manipulate addressables
+            var settings = AddressableAssetSettingsDefaultObject.Settings;
+            string path_to_object = AssetDatabase.GetAssetPath(pallet);
+
+            //Create a group with no schemas
+            //settings.CreateGroup(group_name, false, false, false, new List<AddressableAssetGroupSchema> { settings.DefaultGroup.Schemas[0] });
+            //Create a group with the default schemas
+            if (settings.FindGroup(group_name) == null) settings.CreateGroup(group_name, false, false, false, settings.DefaultGroup.Schemas);
+
+            //Create a Label
+            if (!settings.GetLabels().Contains(AssetWarehouse.palletLabel.labelString)) settings.AddLabel(AssetWarehouse.palletLabel.labelString, false);
+
+            //Make a gameobject an addressable
+            AddressableAssetGroup obj = settings.FindGroup(group_name);
+            var guid = AssetDatabase.AssetPathToGUID(path_to_object);
+
+            //This is the function that actually makes the object addressable
+            var entry = settings.RemoveAssetEntry(guid, obj);
 
             //You'll need these to run to save the changes!
             settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entry, true);

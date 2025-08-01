@@ -21,7 +21,8 @@ namespace AnalogSDK
         public static AssetWarehouse Instance { get; private set; }
         public static Action OnReady;
         public static Action<Pallet> OnLoadedPallet;
-        public AssetLabelReference palletLabel = new()
+        public static Action<Crate> OnLoadedCrate;
+        public static AssetLabelReference palletLabel = new()
         {
             labelString = "pallet"
         };
@@ -93,6 +94,10 @@ namespace AnalogSDK
                 }
             }
             OnLoadedPallet?.Invoke(pallet);
+            foreach (Crate crate in pallet.Crates)
+            {
+                OnLoadedCrate?.Invoke(crate);
+            }
             Pallets.Sort();
             SpawnableCrates.Sort();
             LevelCrates.Sort();
