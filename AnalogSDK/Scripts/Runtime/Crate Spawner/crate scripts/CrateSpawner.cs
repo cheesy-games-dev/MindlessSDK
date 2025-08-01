@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace AnalogSDK {
     public class CrateSpawner : MonoBehaviour {
         public static List<CrateSpawner> CrateSpawners = new();
-        public Barcode<GameObject> barcode = new();
+        public Barcode<SpawnableCrate> barcode;
         public bool manual = false;
         public bool canSpawnOnce = true;
         public UltEvent<GameObject> OnSpawnedCrate;
@@ -20,7 +20,7 @@ namespace AnalogSDK {
 
         void Start() {
             CrateSpawners.Add(this);
-            barcode.crate = AssetWarehouse.GetCrateByBarcode(barcode.barcode) as CrateT<GameObject>;
+            barcode.crate = AssetWarehouse.GetCrateByBarcode(barcode.barcode) as SpawnableCrate;
             if (!manual && canSpawn) {
                 SpawnCrate();
             }

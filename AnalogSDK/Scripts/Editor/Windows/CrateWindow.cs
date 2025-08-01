@@ -113,6 +113,7 @@ namespace AnalogSDK.Editor
             newCrate.Barcode = crateBarcode;
             newCrate.Description = crateDescription;
             newCrate.Tags = crateTags.ToArray();
+            newCrate.Pallet = PallletWindow.selectedPallet;
 
             newCrate.CrateReference = ObjectReference;
 

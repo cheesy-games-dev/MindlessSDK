@@ -10,9 +10,8 @@ namespace AnalogSDK
         public bool Redacted = false;
         public string[] Tags;
         public Pallet Pallet;
-        public Object CrateReference;
         [HideInInspector] public Mesh combinedMesh;
-
+        public Object CrateReference;
         public Color gizmoColor = Color.white;
         public override string ToString()
         {
@@ -20,30 +19,17 @@ namespace AnalogSDK
         }
     }
 
-    public abstract class CrateT<T> : Crate
-    {
-        [SerializeField]
-        public new T CrateReference;
-
-        public CrateT() { }
-
-        public CrateT(T crateReference)
-        {
-            CrateReference = crateReference;
-        }
-    }
-
     [System.Serializable]
-    public class Barcode<T>
+    public class Barcode<T> where T : Crate
     {
         public string barcode;
-        public CrateT<T> crate;
-        public Barcode(string barcode = "", CrateT<T> crate = null)
+        public T crate;
+        public Barcode(string barcode = "", T crate = null)
         {
             this.barcode = barcode;
             this.crate = crate;
         }
-        public Barcode(CrateT<T> crate = null)
+        public Barcode(T crate = null)
         {
             barcode = crate.Barcode;
             this.crate = crate;

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace AnalogSDK.Editor
 {
-    [CustomEditor(typeof(CrateT<>), true)]
+    [CustomEditor(typeof(Crate), true)]
     public class CrateEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
@@ -24,7 +24,7 @@ namespace AnalogSDK.Editor
             }
             if (GUILayout.Button("Create Spawner"))
             {
-                new GameObject($"Crate Spawner ({spawnable.Barcode})").AddComponent<CrateSpawner>().barcode = new(spawnable.Barcode, spawnable);
+                new GameObject($"Crate Spawner ({spawnable.Barcode})").AddComponent<CrateSpawner>().barcode = new Barcode<SpawnableCrate>(spawnable.Barcode, spawnable);
             }
         }
     }

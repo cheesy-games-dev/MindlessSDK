@@ -6,8 +6,13 @@ using UnityEngine;
 namespace AnalogSDK
 {
     [CreateAssetMenu(menuName = "AnalogSDK/Spawnable Crate")]
-    public class SpawnableCrate : CrateT<GameObject>
+    public class SpawnableCrate : Crate
     {
+        public new GameObject CrateReference
+        {
+            get => base.CrateReference as GameObject;
+            set => base.CrateReference = value;
+        }
 #if UNITY_EDITOR
         public void RegenerateCombinedMesh()
         {
