@@ -46,11 +46,10 @@ namespace AnalogSDK
             LoadMods();
         }
 
-        public static void GetCrateByBarcode(ref Barcode barcode)
+        public static Crate GetCrateByBarcode(string barcode)
         {
-            Barcode newBarcode = barcode;
-            newBarcode.crate = Instance.Crates.FirstOrDefault(c => c.Barcode.ToLower() == newBarcode.barcode.ToLower());
-            barcode = new(newBarcode.barcode, newBarcode.crate);
+            Crate crate = Instance.Crates.FirstOrDefault(c => c.Barcode.ToLower() == barcode.ToLower());
+            return crate;
         }
 
         public virtual void LoadMods()
@@ -64,7 +63,8 @@ namespace AnalogSDK
         }
         public virtual void LoadLevel(LevelCrate level, LoadSceneMode mode = LoadSceneMode.Single)
         {
-            Addressables.LoadSceneAsync(level.CrateObject, mode);
+            SceneManager.LoadScene(level.CrateReference.name, mode);
+            Debug.Log($"Loading Level: {level.CrateReference.name}");
         }
 
         protected virtual void LoadPallet(Pallet pallet)

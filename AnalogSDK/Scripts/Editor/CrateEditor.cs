@@ -1,20 +1,18 @@
-using System;
 using UnityEditor;
 using UnityEngine;
 
 namespace AnalogSDK.Editor
 {
-    [CustomEditor(typeof(Crate), true)]
+    [CustomEditor(typeof(CrateT<>), true)]
     public class CrateEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
-            Crate crate = (Crate)target;
+            var crate = (Crate)target;
             var spawnable = crate as SpawnableCrate;
-            if(spawnable) SpawnableCrateEditor(spawnable);
-            
+            if (spawnable) SpawnableCrateEditor(spawnable);
         }
 
         private void SpawnableCrateEditor(SpawnableCrate spawnable)

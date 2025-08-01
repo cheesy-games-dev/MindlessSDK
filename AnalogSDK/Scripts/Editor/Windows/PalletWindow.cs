@@ -43,7 +43,7 @@ namespace AnalogSDK.Editor
                 System.IO.Directory.CreateDirectory(path);
             }
 
-            palletBarcode = $"{palletTitle}.{palletAuthor}.{palletVersion}";
+            palletBarcode = $"{palletAuthor}.{palletTitle}";
 
             Pallet newPallet = CreateInstance<Pallet>();
             newPallet.Title = palletTitle;
@@ -51,7 +51,7 @@ namespace AnalogSDK.Editor
             newPallet.Author = palletAuthor;
             newPallet.Version = palletVersion;
 
-            AssetDatabase.CreateAsset(newPallet, path + "/" + palletTitle + ".pallet.asset");
+            AssetDatabase.CreateAsset(newPallet, path + "/" + newPallet.Barcode + ".pallet.asset");
             AddPalletToAddressables(newPallet);
             AssetDatabase.SaveAssets();
             selectedPallet = newPallet;

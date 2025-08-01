@@ -5,12 +5,12 @@ using System.Collections.Generic;
 namespace AnalogSDK {
     public class CrateSpawner : MonoBehaviour {
         public static List<CrateSpawner> CrateSpawners = new();
-        public Barcode barcode = new();
+        public Barcode<GameObject> barcode = new();
         public bool manual = false;
         public bool canSpawnOnce = true;
         public UltEvent<GameObject> OnSpawnedCrate;
         [HideInInspector] public GameObject spawnedCrate;
-        public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && barcode.crate.CrateObject;
+        public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && barcode.crate.CrateReference;
 
         public static UltEvent<CrateSpawner, GameObject> OnCrateSpawnerSpawn;
         private bool gizmoLogged = false;
@@ -20,7 +20,7 @@ namespace AnalogSDK {
 
         void Start() {
             CrateSpawners.Add(this);
-            AssetWarehouse.GetCrateByBarcode(ref barcode);
+            barcode.crate = AssetWarehouse.GetCrateByBarcode(barcode.barcode) as CrateT<GameObject>;
             if (!manual && canSpawn) {
                 SpawnCrate();
             }
@@ -32,7 +32,7 @@ namespace AnalogSDK {
 
         public GameObject SpawnCrate() {
             if (canSpawn) {
-                spawnedCrate = Instantiate(barcode.crate.CrateObject as GameObject, transform.position, transform.rotation);
+                spawnedCrate = Instantiate(barcode.crate.CrateReference, transform.position, transform.rotation);
                 OnSpawnedCrate?.Invoke(spawnedCrate);
                 OnCrateSpawnerSpawn?.Invoke(this, spawnedCrate);
                 Debug.Log($"Spawned crate: {barcode.crate.name}.");

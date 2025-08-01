@@ -6,18 +6,18 @@ using UnityEngine;
 namespace AnalogSDK
 {
     [CreateAssetMenu(menuName = "AnalogSDK/Spawnable Crate")]
-    public class SpawnableCrate : Crate
+    public class SpawnableCrate : CrateT<GameObject>
     {
 #if UNITY_EDITOR
         public void RegenerateCombinedMesh()
         {
-            if (CrateObject == null)
+            if (CrateReference == null)
             {
                 Debug.LogWarning("No crate prefab set.");
                 return;
             }
 
-            MeshFilter[] meshFilters = (CrateObject as GameObject).GetComponentsInChildren<MeshFilter>();
+            MeshFilter[] meshFilters = CrateReference.GetComponentsInChildren<MeshFilter>();
             CombineInstance[] combine = new CombineInstance[meshFilters.Length];
 
             int i = 0;

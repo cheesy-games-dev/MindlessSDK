@@ -106,15 +106,15 @@ namespace AnalogSDK.Editor
             }
 
 
-            crateBarcode = $"{crateTitle}.{PallletWindow.selectedPallet.Author}.{PallletWindow.selectedPallet.Version}";
+            crateBarcode = $"{PallletWindow.selectedPallet.Barcode}.{crateTitle}";
 
             Crate newCrate = LevelCrate ? CreateInstance<LevelCrate>() : CreateInstance<SpawnableCrate>();
-            newCrate.Title = crateTitle;
+            newCrate.Name = crateTitle;
             newCrate.Barcode = crateBarcode;
             newCrate.Description = crateDescription;
             newCrate.Tags = crateTags.ToArray();
 
-            newCrate.CrateObject = ObjectReference;
+            newCrate.CrateReference = ObjectReference;
 
             string cratePath = "Assets/SDK/pallets/" + PallletWindow.selectedPallet.Title + "_Crates";
             if (!System.IO.Directory.Exists(cratePath))
@@ -122,7 +122,7 @@ namespace AnalogSDK.Editor
                 System.IO.Directory.CreateDirectory(cratePath);
             }
 
-            AssetDatabase.CreateAsset(newCrate, cratePath + "/" + newCrate.Title + ".crate.asset");
+            AssetDatabase.CreateAsset(newCrate, cratePath + "/" + newCrate.Barcode + ".crate.asset");
             AssetDatabase.SaveAssets();
 
 
@@ -140,7 +140,7 @@ namespace AnalogSDK.Editor
             AssetDatabase.SaveAssets();
 
             isCreatingCrate = false;
-            EditorUtility.DisplayDialog("Crate Created", $"Crate {newCrate.Title} has been created for pallet {PallletWindow.selectedPallet.Title}.", "OK");
+            EditorUtility.DisplayDialog("Crate Created", $"Crate {newCrate.Name} has been created for pallet {PallletWindow.selectedPallet.Title}.", "OK");
         }
     }
 }
