@@ -22,10 +22,8 @@ namespace AnalogSDK
         public static Action OnReady;
         public static Action<Pallet> OnLoadedPallet;
         public static Action<Crate> OnLoadedCrate;
-        public static AssetLabelReference palletLabel = new()
-        {
-            labelString = "pallet"
-        };
+        public const string PalletGroup = "Pallets";
+        public const string PalletLabel = "pallet";
         public List<Pallet> Pallets = new();
         public List<Crate> Crates = new();
         public List<SpawnableCrate> SpawnableCrates = new();
@@ -36,14 +34,14 @@ namespace AnalogSDK
         }
         private void Start()
         {
-            if (Instance)
+            if (Instance != this)
             {
                 Debug.LogWarning("An instance of AssetWareHouse already exists. Destroying the new instance.");
                 Destroy(this.gameObject);
                 return;
             }
             Instance = this;
-            DontDestroyOnLoad(Instance);
+            DontDestroyOnLoad(Instance.gameObject);
             LoadMods();
         }
 
@@ -59,7 +57,7 @@ namespace AnalogSDK
             Pallets.Clear();
             SpawnableCrates.Clear();
             LevelCrates.Clear();
-            Addressables.LoadAssetsAsync<Pallet>(palletLabel, LoadPallet);
+            Addressables.LoadAssetsAsync<Pallet>(PalletLabel, LoadPallet);
             if (ready) OnReady?.Invoke();
         }
         public virtual void LoadLevel(LevelCrate level, LoadSceneMode mode = LoadSceneMode.Single)

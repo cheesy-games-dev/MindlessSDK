@@ -56,60 +56,40 @@ namespace AnalogSDK.Editor
             AssetDatabase.SaveAssets();
             selectedPallet = newPallet;
         }
-        const string group_name = "Pallets";
+        static string path_to_object => AssetDatabase.GetAssetPath(selectedPallet);
+        static string custom_address => selectedPallet.Barcode;
+        public static AddressableAssetSettings settings => AddressableAssetSettingsDefaultObject.Settings;
+        public static AddressableAssetGroup group;
         public static void AddPalletToAddressables(Pallet newPallet)
         {
-            //Use this object to manipulate addressables
-            var settings = AddressableAssetSettingsDefaultObject.Settings;
+            selectedPallet = newPallet;
 
+            group = settings.FindGroup(AssetWarehouse.PalletGroup);
+            group ??= settings.CreateGroup(AssetWarehouse.PalletGroup, false, false, false, settings.DefaultGroup.Schemas);
 
-            string path_to_object = AssetDatabase.GetAssetPath(newPallet);
-            string custom_address = newPallet.Barcode;
+            if (!settings.GetLabels().Contains(AssetWarehouse.PalletLabel)) settings.AddLabel(AssetWarehouse.PalletLabel, false);
 
-            //Create a group with no schemas
-            //settings.CreateGroup(group_name, false, false, false, new List<AddressableAssetGroupSchema> { settings.DefaultGroup.Schemas[0] });
-            //Create a group with the default schemas
-            if (settings.FindGroup(group_name) == null) settings.CreateGroup(group_name, false, false, false, settings.DefaultGroup.Schemas);
-
-            //Create a Label
-            if (!settings.GetLabels().Contains(AssetWarehouse.palletLabel.labelString)) settings.AddLabel(AssetWarehouse.palletLabel.labelString, false);
-
-            //Make a gameobject an addressable
-            AddressableAssetGroup obj = settings.FindGroup(group_name);
             var guid = AssetDatabase.AssetPathToGUID(path_to_object);
 
-            //This is the function that actually makes the object addressable
-            var entry = settings.CreateOrMoveEntry(guid, obj);
-            entry.labels.Add(AssetWarehouse.palletLabel.labelString);
+            var entry = settings.CreateOrMoveEntry(guid, group);
+            entry.labels.Add(AssetWarehouse.PalletLabel);
             entry.address = custom_address;
 
             //You'll need these to run to save the changes!
             settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entry, true);
+            selectedPallet = newPallet;
             AssetDatabase.SaveAssets();
         }
 
         public static void RemovePalletFromAddressables(Pallet pallet)
         {
-            //Use this object to manipulate addressables
-            var settings = AddressableAssetSettingsDefaultObject.Settings;
-            string path_to_object = AssetDatabase.GetAssetPath(pallet);
-
-            //Create a group with no schemas
-            //settings.CreateGroup(group_name, false, false, false, new List<AddressableAssetGroupSchema> { settings.DefaultGroup.Schemas[0] });
-            //Create a group with the default schemas
-            if (settings.FindGroup(group_name) == null) settings.CreateGroup(group_name, false, false, false, settings.DefaultGroup.Schemas);
-
-            //Create a Label
-            if (!settings.GetLabels().Contains(AssetWarehouse.palletLabel.labelString)) settings.AddLabel(AssetWarehouse.palletLabel.labelString, false);
+            if (selectedPallet == pallet) return;
 
             //Make a gameobject an addressable
-            AddressableAssetGroup obj = settings.FindGroup(group_name);
             var guid = AssetDatabase.AssetPathToGUID(path_to_object);
 
-            //This is the function that actually makes the object addressable
-            var entry = settings.RemoveAssetEntry(guid, obj);
+            var entry = settings.RemoveAssetEntry(guid);
 
-            //You'll need these to run to save the changes!
             settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entry, true);
             AssetDatabase.SaveAssets();
         }
