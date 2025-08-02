@@ -22,6 +22,7 @@ namespace AnalogSDK.Editor
             addressablesPlatform = (AddressablesPlatform)EditorGUILayout.EnumPopup("Selected Platform", addressablesPlatform);
             if (GUILayout.Button($"Build to {addressablesPlatform}"))
             {
+                AddressableAssetSettings.CleanPlayerContent();
                 PallletWindow.RemovePalletFromAddressables(pallet);
                 PallletWindow.AddPalletToAddressables(pallet);
                 AddressableAssetSettings.BuildPlayerContent();
