@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,6 +8,7 @@ namespace AnalogSDK.Editor
     [CanEditMultipleObjects]
     public class CrateEditor : UnityEditor.Editor
     {
+        public Crate[] selectedCrates => targets as Crate[];
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
@@ -20,57 +22,62 @@ namespace AnalogSDK.Editor
         {
             if (GUILayout.Button("Generate and Save Combined Mesh"))
             {
-                RegenerateCombinedMesh(spawnable);
-                SaveMeshToFolder(spawnable);
+                RegenerateCombinedMesh();
+                SaveMeshToFolder();
             }
             if (GUILayout.Button("Create Spawner"))
             {
                 new GameObject($"Crate Spawner ({spawnable.Barcode})").AddComponent<CrateSpawner>().barcode = new Barcode<SpawnableCrate>(spawnable.Barcode, spawnable);
             }
         }
-        public void RegenerateCombinedMesh(SpawnableCrate spawnable)
+        public void RegenerateCombinedMesh()
         {
-            if (spawnable.CrateReference == null)
+            foreach (var spawnable in selectedCrates.Cast<SpawnableCrate>())
             {
-                Debug.LogWarning("No crate prefab set.");
-                return;
+                if (spawnable.CrateReference == null)
+                {
+                    Debug.LogWarning("No crate prefab set.");
+                    return;
+                }
+
+                MeshFilter[] meshFilters = spawnable.CrateReference.GetComponentsInChildren<MeshFilter>();
+                CombineInstance[] combine = new CombineInstance[meshFilters.Length];
+
+                int i = 0;
+                foreach (var meshFilter in meshFilters)
+                {
+                    combine[i].mesh = meshFilter.sharedMesh;
+                    combine[i].transform = meshFilter.transform.localToWorldMatrix;
+                    i++;
+                }
+
+                spawnable.combinedMesh = new Mesh();
+                spawnable.combinedMesh.CombineMeshes(combine, true, true);
             }
-
-            MeshFilter[] meshFilters = spawnable.CrateReference.GetComponentsInChildren<MeshFilter>();
-            CombineInstance[] combine = new CombineInstance[meshFilters.Length];
-
-            int i = 0;
-            foreach (var meshFilter in meshFilters)
-            {
-                combine[i].mesh = meshFilter.sharedMesh;
-                combine[i].transform = meshFilter.transform.localToWorldMatrix;
-                i++;
-            }
-
-            spawnable.combinedMesh = new Mesh();
-            spawnable.combinedMesh.CombineMeshes(combine, true, true);
-
         }
 
-        public void SaveMeshToFolder(SpawnableCrate spawnable)
+        public void SaveMeshToFolder()
         {
-            if (spawnable.combinedMesh == null)
+            foreach (var spawnable in selectedCrates.Cast<SpawnableCrate>())
             {
-                Debug.LogWarning("No combined mesh to save.");
-                return;
+                if (spawnable.combinedMesh == null)
+                {
+                    Debug.LogWarning("No combined mesh to save.");
+                    return;
+                }
+
+                string meshPath = $"{AssetWarehouse.SavedMeshesPath}/{spawnable.Name}_CombinedMesh.asset";
+
+                if (!AssetDatabase.IsValidFolder(AssetWarehouse.SavedMeshesPath))
+                {
+                    AssetDatabase.CreateFolder("Assets/SDK", "meshes");
+                }
+
+                AssetDatabase.CreateAsset(spawnable.combinedMesh, meshPath);
+                AssetDatabase.SaveAssets();
+
+                Debug.Log($"Mesh saved to: {meshPath}");
             }
-
-            string meshPath = $"{AssetWarehouse.SavedMeshesPath}/{spawnable.Name}_CombinedMesh.asset";
-
-            if (!AssetDatabase.IsValidFolder(AssetWarehouse.SavedMeshesPath))
-            {
-                AssetDatabase.CreateFolder("Assets/SDK", "meshes");
-            }
-
-            AssetDatabase.CreateAsset(spawnable.combinedMesh, meshPath);
-            AssetDatabase.SaveAssets();
-
-            Debug.Log($"Mesh saved to: {meshPath}");
         }
     }
 }
