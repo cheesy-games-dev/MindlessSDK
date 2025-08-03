@@ -30,7 +30,7 @@ namespace AnalogSDK {
 
         public GameObject SpawnCrate() {
             if (canSpawn) {
-                spawnedCrate = Instantiate(barcode.crate.CrateReference, transform.position, transform.rotation);
+                spawnedCrate = barcode.crate.SpawnCrate(transform.position, transform.rotation);
                 OnSpawnedCrate?.Invoke(this, spawnedCrate);
                 Debug.Log($"Spawned crate: {barcode.crate.name}.");
             }
