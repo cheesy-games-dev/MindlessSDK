@@ -20,7 +20,7 @@ namespace AnalogSDK
     }
 
     [System.Serializable]
-    public class Barcode<T> where T : Crate
+    public struct Barcode<T> where T : Crate
     {
         public string barcode;
         public T crate;
@@ -33,11 +33,6 @@ namespace AnalogSDK
         {
             barcode = crate.Barcode;
             this.crate = crate;
-        }
-        public Barcode()
-        {
-            barcode = null;
-            crate = null;
         }
     }
 }

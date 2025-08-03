@@ -8,13 +8,11 @@ namespace AnalogSDK.Editor
     [CanEditMultipleObjects]
     public class CrateEditor : UnityEditor.Editor
     {
-        public static Crate[] selectedCrates { get; private set; }
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
             var crate = (Crate)target;
-            selectedCrates = (Crate[])targets;
             var spawnable = crate as SpawnableCrate;
             if (spawnable) SpawnableCrateEditor(spawnable);
         }
@@ -33,9 +31,9 @@ namespace AnalogSDK.Editor
         }
         public void RegenerateCombinedMesh()
         {
-            foreach (var crate in selectedCrates)
+            foreach (var target in targets)
             {
-                var spawnable = crate as SpawnableCrate;
+                var spawnable = target as SpawnableCrate;
                 if (!spawnable) return;
                 if (spawnable.CrateReference == null)
                 {
@@ -61,9 +59,9 @@ namespace AnalogSDK.Editor
 
         public void SaveMeshToFolder()
         {
-            foreach (var crate in selectedCrates)
+            foreach (var target in targets)
             {
-                var spawnable = crate as SpawnableCrate;
+                var spawnable = target as SpawnableCrate;
                 if (!spawnable) return;
                 if (spawnable.combinedMesh == null)
                 {
