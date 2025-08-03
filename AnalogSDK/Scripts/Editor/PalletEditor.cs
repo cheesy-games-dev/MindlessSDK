@@ -8,7 +8,7 @@ namespace AnalogSDK.Editor
     [CustomEditor(typeof(Pallet), true)]
     public class PalletEditor : UnityEditor.Editor
     {
-        public static AddressablesPlatform addressablesPlatform = AddressablesPlatform.Windows;
+        public static BuildTarget buildTarget = BuildTarget.StandaloneWindows;
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
@@ -19,9 +19,11 @@ namespace AnalogSDK.Editor
                 PallletWindow.selectedPallet = pallet;
                 CrateWindow.OpenWindow();
             }
-            addressablesPlatform = (AddressablesPlatform)EditorGUILayout.EnumPopup("Selected Platform", addressablesPlatform);
-            if (GUILayout.Button($"Build to {addressablesPlatform}"))
+            GUILayout.Space(10);
+            buildTarget = (BuildTarget)EditorGUILayout.EnumPopup("Build Target", buildTarget);
+            if (GUILayout.Button($"Build to {buildTarget}"))
             {
+                if(EditorUserBuildSettings.activeBuildTarget != buildTarget) EditorUserBuildSettings.SwitchActiveBuildTarget(0, buildTarget);
                 AddressableAssetSettings.CleanPlayerContent();
                 PallletWindow.RemovePalletFromAddressables(pallet);
                 PallletWindow.AddPalletToAddressables(pallet);
