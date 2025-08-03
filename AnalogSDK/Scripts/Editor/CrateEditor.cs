@@ -8,12 +8,13 @@ namespace AnalogSDK.Editor
     [CanEditMultipleObjects]
     public class CrateEditor : UnityEditor.Editor
     {
-        public Crate[] selectedCrates => targets as Crate[];
+        public static Crate[] selectedCrates { get; private set; }
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
             var crate = (Crate)target;
+            selectedCrates = (Crate[])targets;
             var spawnable = crate as SpawnableCrate;
             if (spawnable) SpawnableCrateEditor(spawnable);
         }
