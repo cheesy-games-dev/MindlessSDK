@@ -16,20 +16,22 @@ namespace AnalogSDK {
         private MeshRenderer meshRenderer;
         private GameObject combinedMeshObject;
 
-        void Start() {
+        protected virtual void Start() {
             Validate();
             CrateSpawners.Add(this);
-            barcode.crate = AssetWarehouse.GetCrateByBarcode(barcode.barcode) as SpawnableCrate;
+            if (AssetWarehouse.TryGetCrateByBarcode(barcode.barcode, out Crate crate))
+                if (crate as SpawnableCrate)
+                    barcode.crate = crate as SpawnableCrate;
             if (!manual && canSpawn) {
                 SpawnCrate();
             }
         }
 
-        void OnDestroy() {
+        protected virtual void OnDestroy() {
             CrateSpawners.Remove(this);
         }
 
-        public GameObject SpawnCrate() {
+        public virtual GameObject SpawnCrate() {
             if (canSpawn) {
                 spawnedCrate = barcode.crate.SpawnCrate(transform.position, transform.rotation);
                 OnSpawnedCrate?.Invoke(this, spawnedCrate);
@@ -48,12 +50,12 @@ namespace AnalogSDK {
             return spawnedCrate;
         }
 
-        public GameObject DestroyCrate() {
+        public virtual GameObject DestroyCrate() {
             Destroy(spawnedCrate);
             return spawnedCrate;
         }
 
-        private void VisualizeCombinedMesh() {
+        protected virtual void VisualizeCombinedMesh() {
             if (combinedMeshObject == null) {
                 combinedMeshObject = new GameObject("CombinedMeshObject");
                 combinedMeshObject.transform.SetParent(transform);
@@ -68,7 +70,7 @@ namespace AnalogSDK {
             combinedMeshObject.transform.rotation = transform.rotation;
         }
 
-        private void OnDrawGizmos() {
+        protected virtual void OnDrawGizmos() {
             if (barcode.crate != null && barcode.crate.combinedMesh != null) {
                 Gizmos.color = barcode.crate.gizmoColor;
 
@@ -85,9 +87,9 @@ namespace AnalogSDK {
             }
         }
         public void OnValidate() => Validate();
-        public void Validate()
-        {
-            if (barcode.crate) barcode.barcode = barcode.crate.Barcode;
+        public virtual void Validate() {
+            if (barcode.crate)
+                barcode.barcode = barcode.crate.Barcode;
             gameObject.name = $"Crate Spawner ({barcode.crate.name})";
         }
     }
