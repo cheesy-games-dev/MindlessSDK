@@ -17,6 +17,7 @@ namespace AnalogSDK {
         private GameObject combinedMeshObject;
 
         void Start() {
+            Validate();
             CrateSpawners.Add(this);
             barcode.crate = AssetWarehouse.GetCrateByBarcode(barcode.barcode) as SpawnableCrate;
             if (!manual && canSpawn) {
@@ -83,10 +84,11 @@ namespace AnalogSDK {
                 gizmoLogged = true;
             }
         }
-        public void OnValidate()
+        public void OnValidate() => Validate();
+        public void Validate()
         {
             if (barcode.crate) barcode.barcode = barcode.crate.Barcode;
-            gameObject.name = $"Crate Spawner ({barcode.barcode})";
+            gameObject.name = $"Crate Spawner ({barcode.crate.name})";
         }
     }
 }

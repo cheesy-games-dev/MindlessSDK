@@ -60,7 +60,7 @@ namespace AnalogSDK.Editor
                 return;
             }
 
-            string meshPath = $"{AssetWarehouse.SavedMeshesPath}/{name}_CombinedMesh.asset";
+            string meshPath = $"{AssetWarehouse.SavedMeshesPath}/{spawnable.Name}_CombinedMesh.asset";
 
             if (!AssetDatabase.IsValidFolder(AssetWarehouse.SavedMeshesPath))
             {
