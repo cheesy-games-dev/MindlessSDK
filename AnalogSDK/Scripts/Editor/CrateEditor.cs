@@ -32,8 +32,10 @@ namespace AnalogSDK.Editor
         }
         public void RegenerateCombinedMesh()
         {
-            foreach (var spawnable in selectedCrates.Cast<SpawnableCrate>())
+            foreach (var crate in selectedCrates)
             {
+                var spawnable = crate as SpawnableCrate;
+                if (!spawnable) return;
                 if (spawnable.CrateReference == null)
                 {
                     Debug.LogWarning("No crate prefab set.");
@@ -58,8 +60,10 @@ namespace AnalogSDK.Editor
 
         public void SaveMeshToFolder()
         {
-            foreach (var spawnable in selectedCrates.Cast<SpawnableCrate>())
+            foreach (var crate in selectedCrates)
             {
+                var spawnable = crate as SpawnableCrate;
+                if (!spawnable) return;
                 if (spawnable.combinedMesh == null)
                 {
                     Debug.LogWarning("No combined mesh to save.");
