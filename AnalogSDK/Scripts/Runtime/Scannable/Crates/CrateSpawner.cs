@@ -1,6 +1,8 @@
 using UltEvents;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using UnityEngine.AddressableAssets;
 
 namespace AnalogSDK {
     public class CrateSpawner : MonoBehaviour, ICrateBarcode {
@@ -10,7 +12,7 @@ namespace AnalogSDK {
         public bool canSpawnOnce = true;
         public UltEvent<CrateSpawner, GameObject> OnSpawnedCrate;
         [HideInInspector] public GameObject spawnedCrate;
-        public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && barcode.crate.CrateReference;
+        public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && barcode.crate.CrateReference.Asset;
         private bool gizmoLogged = false;
         private MeshFilter meshFilter;
         private MeshRenderer meshRenderer;
@@ -31,9 +33,11 @@ namespace AnalogSDK {
             CrateSpawners.Remove(this);
         }
 
-        public virtual GameObject SpawnCrate() {
+        public virtual async Task<GameObject> SpawnCrate() {
             if (canSpawn) {
-                spawnedCrate = barcode.crate.SpawnCrate(transform.position, transform.rotation);
+                var task = barcode.crate.SpawnCrate(transform.position, transform.rotation);
+                await task;
+                spawnedCrate = task.Result;
                 OnSpawnedCrate?.Invoke(this, spawnedCrate);
                 Debug.Log($"Spawned crate: {barcode.crate.name}.");
             }
@@ -51,7 +55,7 @@ namespace AnalogSDK {
         }
 
         public virtual GameObject DestroyCrate() {
-            Destroy(spawnedCrate);
+            Addressables.ReleaseInstance(spawnedCrate);
             return spawnedCrate;
         }
 

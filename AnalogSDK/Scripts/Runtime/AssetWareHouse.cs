@@ -60,8 +60,8 @@ namespace AnalogSDK {
                 OnReady?.Invoke();
         }
         public virtual void LoadLevel(LevelCrate level, LoadSceneMode mode = LoadSceneMode.Single) {
-            SceneManager.LoadScene(level.CrateReference.name, mode);
-            Debug.Log($"Loading Level: {level.CrateReference.name}");
+            Addressables.LoadSceneAsync(level.CrateReference, mode);
+            Debug.Log($"Loading Level: {level.CrateReference.RuntimeKey}");
         }
 
         protected virtual void LoadPallet(Pallet pallet) {

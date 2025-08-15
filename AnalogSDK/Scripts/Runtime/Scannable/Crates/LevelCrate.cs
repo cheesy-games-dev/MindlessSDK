@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 namespace AnalogSDK
 {
-    public class LevelCrate : Crate
+    public class LevelCrate : TCrate<Object>
     {
     }
 }

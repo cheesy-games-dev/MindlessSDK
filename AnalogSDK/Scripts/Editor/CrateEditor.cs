@@ -41,7 +41,7 @@ namespace AnalogSDK.Editor
                     return;
                 }
 
-                MeshFilter[] meshFilters = spawnable.CrateReference.GetComponentsInChildren<MeshFilter>();
+                MeshFilter[] meshFilters = (spawnable.CrateReference.Asset as GameObject).GetComponentsInChildren<MeshFilter>();
                 CombineInstance[] combine = new CombineInstance[meshFilters.Length];
 
                 int i = 0;

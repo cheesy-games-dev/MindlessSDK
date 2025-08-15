@@ -4,9 +4,8 @@ using UnityEngine;
 
 namespace AnalogSDK
 {
-    public class Pallet : ScriptableObject
+    public class Pallet : Scannable
     {
-        public string Barcode;
         public string Title;
         public string Author;
         public string Version;

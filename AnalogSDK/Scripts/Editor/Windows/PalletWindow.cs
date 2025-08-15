@@ -62,7 +62,7 @@ namespace AnalogSDK.Editor
         public static void AddPalletToAddressables(Pallet newPallet)
         {
             selectedPallet = newPallet;
-            FindCreateGroup();
+            FindOrCreateGroup();
 
             var guid = AssetDatabase.AssetPathToGUID(selectedPalletPath);
 
@@ -76,7 +76,7 @@ namespace AnalogSDK.Editor
             AssetDatabase.SaveAssets();
         }
 
-        public static void FindCreateGroup()
+        public static void FindOrCreateGroup()
         {
             group = settings.FindGroup(AssetWarehouse.PalletGroup);
             group ??= settings.CreateGroup(AssetWarehouse.PalletGroup, false, false, true, settings.DefaultGroup.Schemas);
@@ -97,7 +97,7 @@ namespace AnalogSDK.Editor
         public static void RemovePalletFromAddressables(Pallet pallet)
         {
             if (selectedPallet == pallet) return;
-            FindCreateGroup();
+            FindOrCreateGroup();
 
             var guid = AssetDatabase.AssetPathToGUID(selectedPalletPath);
 
