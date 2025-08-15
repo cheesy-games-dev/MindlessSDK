@@ -1,7 +1,5 @@
 using UnityEditor;
-using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 namespace AnalogSDK.Editor
 {
@@ -18,16 +16,6 @@ namespace AnalogSDK.Editor
             {
                 PallletWindow.selectedPallet = pallet;
                 CrateWindow.OpenWindow();
-            }
-            GUILayout.Space(10);
-            buildTarget = (BuildTarget)EditorGUILayout.EnumPopup("Build Target", buildTarget);
-            if (GUILayout.Button($"Build to {buildTarget}"))
-            {
-                if(EditorUserBuildSettings.activeBuildTarget != buildTarget) EditorUserBuildSettings.SwitchActiveBuildTarget(0, buildTarget);
-                AddressableAssetSettings.CleanPlayerContent();
-                PallletWindow.RemovePalletFromAddressables(pallet);
-                PallletWindow.AddPalletToAddressables(pallet);
-                AddressableAssetSettings.BuildPlayerContent();
             }
         }
     }

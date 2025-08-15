@@ -114,7 +114,7 @@ namespace AnalogSDK.Editor
             newCrate.Description = crateDescription;
             newCrate.Tags = crateTags.ToArray();
             newCrate.Pallet = PallletWindow.selectedPallet;
-            newCrate.CrateReference = new (AddressableCreator.GetGUIDFromObject(newCrate));
+            newCrate.CrateReference.Asset = ObjectReference;
 
             string cratePath = "Assets/SDK/pallets/" + PallletWindow.selectedPallet.Title + "_Crates";
             if (!System.IO.Directory.Exists(cratePath))

@@ -26,7 +26,7 @@ namespace AnalogSDK.Editor
             }
             if (GUILayout.Button("Create Spawner"))
             {
-                new GameObject($"Crate Spawner ({spawnable.Barcode})").AddComponent<CrateSpawner>().barcode = new Barcode<SpawnableCrate>(spawnable.Barcode, spawnable);
+                new GameObject($"Crate Spawner ({spawnable.Barcode})").AddComponent<CrateSpawner>().barcode = new CrateBarcode<SpawnableCrate>(spawnable.Barcode, spawnable);
             }
         }
         public void RegenerateCombinedMesh()
@@ -35,7 +35,7 @@ namespace AnalogSDK.Editor
             {
                 var spawnable = target as SpawnableCrate;
                 if (!spawnable) return;
-                if (spawnable.CrateReference == null)
+                if (spawnable.CrateReference.Asset == null)
                 {
                     Debug.LogWarning("No crate prefab set.");
                     return;
@@ -56,7 +56,6 @@ namespace AnalogSDK.Editor
                 spawnable.combinedMesh.CombineMeshes(combine, true, true);
             }
         }
-
         public void SaveMeshToFolder()
         {
             foreach (var target in targets)
@@ -68,12 +67,12 @@ namespace AnalogSDK.Editor
                     Debug.LogWarning("No combined mesh to save.");
                     return;
                 }
+                string path = AssetDatabase.GetAssetPath(spawnable) + "/meshes";
+                string meshPath = $"{path}/{spawnable.Name}_CombinedMesh.asset";
 
-                string meshPath = $"{AssetWarehouse.SavedMeshesPath}/{spawnable.Name}_CombinedMesh.asset";
-
-                if (!AssetDatabase.IsValidFolder(AssetWarehouse.SavedMeshesPath))
+                if (!AssetDatabase.IsValidFolder(path))
                 {
-                    AssetDatabase.CreateFolder("Assets/SDK", "meshes");
+                    AssetDatabase.CreateFolder(path, "meshes");
                 }
 
                 AssetDatabase.CreateAsset(spawnable.combinedMesh, meshPath);

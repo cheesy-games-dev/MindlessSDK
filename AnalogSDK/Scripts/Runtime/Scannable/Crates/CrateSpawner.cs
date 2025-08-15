@@ -2,12 +2,11 @@ using UltEvents;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using UnityEngine.AddressableAssets;
 
 namespace AnalogSDK {
     public class CrateSpawner : MonoBehaviour, ICrateBarcode {
         public static List<CrateSpawner> CrateSpawners = new();
-        public Barcode<SpawnableCrate> barcode = new();
+        public CrateBarcode<SpawnableCrate> barcode = new();
         public bool manual = false;
         public bool canSpawnOnce = true;
         public UltEvent<CrateSpawner, GameObject> OnSpawnedCrate;
@@ -18,14 +17,14 @@ namespace AnalogSDK {
         private MeshRenderer meshRenderer;
         private GameObject combinedMeshObject;
 
-        protected virtual void Start() {
+        protected virtual async void Start() {
             Validate();
             CrateSpawners.Add(this);
-            if (AssetWarehouse.TryGetCrateByBarcode(barcode.barcode, out Crate crate))
-                if (crate as SpawnableCrate)
-                    barcode.crate = crate as SpawnableCrate;
+            if(barcode.crate) barcode.Barcode = barcode.crate.Barcode;
+            //AssetWarehouse.TryGetCrateByBarcode(barcode.Barcode, out Crate crate);
+            //barcode.crate = crate as SpawnableCrate;
             if (!manual && canSpawn) {
-                SpawnCrate();
+                await SpawnCrate();
             }
         }
 
@@ -55,7 +54,7 @@ namespace AnalogSDK {
         }
 
         public virtual GameObject DestroyCrate() {
-            Addressables.ReleaseInstance(spawnedCrate);
+            Destroy(spawnedCrate);
             return spawnedCrate;
         }
 
@@ -93,8 +92,8 @@ namespace AnalogSDK {
         public void OnValidate() => Validate();
         public virtual void Validate() {
             if (barcode.crate)
-                barcode.barcode = barcode.crate.Barcode;
-            gameObject.name = $"Crate Spawner ({barcode.crate.name})";
+                barcode.Barcode = barcode.crate.Barcode;
+            gameObject.name = $"Crate Spawner ({barcode.Barcode})";
         }
     }
 }

@@ -7,7 +7,7 @@ namespace AnalogSDK
 {
     public class LevelLoader : MonoBehaviour, ICrateBarcode
     {
-        public Barcode<LevelCrate> LevelCrateToLoad;
+        public CrateBarcode<LevelCrate> LevelCrateToLoad;
         public float delayBeforeLoad = 0f;
         public UltEvent BeforeLoadEvent;
         public UltEvent LoadedEvent;
@@ -17,7 +17,7 @@ namespace AnalogSDK
             StartCoroutine(LoadSceneWithDelay());
         }
 
-        private IEnumerator LoadSceneWithDelay()
+        protected virtual IEnumerator LoadSceneWithDelay()
         {
             if (LoadedEvent != null)
             {
@@ -26,12 +26,12 @@ namespace AnalogSDK
 
             yield return new WaitForSeconds(delayBeforeLoad);
 
-            AssetWarehouse.Instance.LoadLevel(LevelCrateToLoad.crate);
+            //AssetWarehouse.LoadLevel(LevelCrateToLoad.Barcode);
         }
 
         public void OnValidate()
         {
-            if (LevelCrateToLoad.crate) LevelCrateToLoad.barcode = LevelCrateToLoad.crate.Barcode;
+            if (LevelCrateToLoad.crate) LevelCrateToLoad.Barcode = LevelCrateToLoad.crate.Barcode;
         }
     }
 }

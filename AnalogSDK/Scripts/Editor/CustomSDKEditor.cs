@@ -56,7 +56,7 @@ namespace AnalogSDK.Editor
         {
             GameObject go = new GameObject("Level Crate");
 
-            go.AddComponent<CrateSpawner>();
+            go.AddComponent<LevelLoader>();
 
             Undo.RegisterCreatedObjectUndo(go, "Created Level Crate");
 

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 namespace AnalogSDK
 {
@@ -20,22 +19,31 @@ namespace AnalogSDK
 
     public abstract class TCrate<T> : Crate where T : Object
     {
-        public AssetReferenceT<T> CrateReference;
+        public ObjectBarcode<T> CrateReference;
     }
 
     [System.Serializable]
-    public struct Barcode<T> where T : Crate
+    public struct ObjectBarcode<T> : IScannable where T : Object
     {
-        public string barcode;
+        private string _barcode;
+        public string Barcode { get => _barcode; set { _barcode = value; } }
+        public T Asset;
+    }
+
+    [System.Serializable]
+    public struct CrateBarcode<T> : IScannable where T : Crate
+    {
+        [SerializeField] private string _barcode;
+        public string Barcode { get => _barcode; set { _barcode = value; } }
         public T crate;
-        public Barcode(string barcode = "", T crate = null)
+        public CrateBarcode(string barcode = "", T crate = null)
         {
-            this.barcode = barcode;
+            this._barcode = barcode;
             this.crate = crate;
         }
-        public Barcode(T crate = null)
+        public CrateBarcode(T crate = null)
         {
-            barcode = crate.Barcode;
+            _barcode = crate.Barcode;
             this.crate = crate;
         }
     }

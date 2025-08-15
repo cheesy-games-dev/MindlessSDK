@@ -1,9 +1,5 @@
 using UnityEditor;
 using UnityEngine;
-using UnityEditor.AddressableAssets.Settings;
-using UnityEditor.AddressableAssets;
-using UnityEditor.AddressableAssets.Settings.GroupSchemas;
-using UnityEngine.ResourceManagement.ResourceProviders;
 
 namespace AnalogSDK.Editor
 {
@@ -54,57 +50,6 @@ namespace AnalogSDK.Editor
             //AddPalletToAddressables(newPallet);
             AssetDatabase.SaveAssets();
             selectedPallet = newPallet;
-        }
-        static string selectedPalletPath => AssetDatabase.GetAssetPath(selectedPallet);
-        static string selectedPalletAddress => selectedPallet.Barcode;
-        public static AddressableAssetSettings settings => AddressableAssetSettingsDefaultObject.Settings;
-        public static AddressableAssetGroup group;
-        public static void AddPalletToAddressables(Pallet newPallet)
-        {
-            selectedPallet = newPallet;
-            FindOrCreateGroup();
-
-            var guid = AssetDatabase.AssetPathToGUID(selectedPalletPath);
-
-            var entry = settings.CreateOrMoveEntry(guid, group);
-            entry.labels.Add(AssetWarehouse.PalletLabel);
-            entry.address = selectedPalletAddress;
-
-            //You'll need these to run to save the changes!
-            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entry, true);
-            selectedPallet = newPallet;
-            AssetDatabase.SaveAssets();
-        }
-
-        public static void FindOrCreateGroup()
-        {
-            group = settings.FindGroup(AssetWarehouse.PalletGroup);
-            group ??= settings.CreateGroup(AssetWarehouse.PalletGroup, false, false, true, settings.DefaultGroup.Schemas);
-            settings.EnableJsonCatalog = true;
-
-            var schema = group.GetSchema<BundledAssetGroupSchema>();
-            schema.UseDefaultSchemaSettings = false;
-            schema.BundleNaming = BundledAssetGroupSchema.BundleNamingStyle.NoHash;
-            schema.IncludeInBuild = true;
-            schema.IncludeAddressInCatalog = true;
-            schema.IncludeGUIDInCatalog = true;
-            schema.IncludeLabelsInCatalog = true;
-            schema.BundleMode = BundledAssetGroupSchema.BundlePackingMode.PackSeparately;
-
-            if (!settings.GetLabels().Contains(AssetWarehouse.PalletLabel)) settings.AddLabel(AssetWarehouse.PalletLabel, true);
-        }
-
-        public static void RemovePalletFromAddressables(Pallet pallet)
-        {
-            if (selectedPallet == pallet) return;
-            FindOrCreateGroup();
-
-            var guid = AssetDatabase.AssetPathToGUID(selectedPalletPath);
-
-            var entry = settings.RemoveAssetEntry(guid);
-
-            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entry, true);
-            AssetDatabase.SaveAssets();
         }
 
         public void SelectPallet()
