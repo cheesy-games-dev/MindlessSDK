@@ -17,7 +17,7 @@ namespace AnalogSDK
             spawned.transform.parent = parent;
             return spawned;
         }
-        public virtual GameObject SpawnCrate(Transform parent = null)
+        public virtual GameObject SpawnCrate(Transform parent)
         {
             return SpawnCrate(parent.position, parent.rotation, parent).Result;
         }
