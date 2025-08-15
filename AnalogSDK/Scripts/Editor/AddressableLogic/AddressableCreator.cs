@@ -15,7 +15,7 @@ namespace AnalogSDK.Editor
         public static void AddScannableToAddressables(Scannable scannable)
         {
             FindOrCreateGroup();
-            var guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(scannable));
+            var guid = GetGUIDFromObject(scannable);
 
             var entry = settings.CreateOrMoveEntry(guid, group);
             entry.labels.Add(AssetWarehouse.PalletLabel);
@@ -26,14 +26,14 @@ namespace AnalogSDK.Editor
             AssetDatabase.SaveAssets();
         }
 
-        public static void AddScannableToAddressables(Object scannable)
+        public static void AddScannableToAddressables(Object Object)
         {
             FindOrCreateGroup();
-            var guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(scannable));
+            var guid = GetGUIDFromObject(Object);
 
             var entry = settings.CreateOrMoveEntry(guid, group);
             entry.labels.Add(AssetWarehouse.PalletLabel);
-            entry.address = scannable.name + "";
+            entry.address = Object.name + "";
 
             //You'll need these to run to save the changes!
             settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entry, true);
@@ -57,6 +57,11 @@ namespace AnalogSDK.Editor
             schema.BundleMode = BundledAssetGroupSchema.BundlePackingMode.PackSeparately;
 
             if (!settings.GetLabels().Contains(AssetWarehouse.PalletLabel)) settings.AddLabel(AssetWarehouse.PalletLabel, true);
+        }
+
+        public static string GetGUIDFromObject(Object Object)
+        {
+            return AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(Object));
         }
 
         public static void DeleteGroupFromAddressables(AddressableAssetGroup group)

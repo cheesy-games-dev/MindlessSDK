@@ -108,14 +108,13 @@ namespace AnalogSDK.Editor
 
             crateBarcode = $"{PallletWindow.selectedPallet.Barcode}.{crateTitle}";
 
-            Crate newCrate = LevelCrate ? CreateInstance<LevelCrate>() : CreateInstance<SpawnableCrate>();
+            TCrate<Object> newCrate = LevelCrate ? CreateInstance<LevelCrate>() : CreateInstance<SpawnableCrate>();
             newCrate.Name = crateTitle;
             newCrate.Barcode = crateBarcode;
             newCrate.Description = crateDescription;
             newCrate.Tags = crateTags.ToArray();
             newCrate.Pallet = PallletWindow.selectedPallet;
-
-            newCrate.CrateReference = ObjectReference;
+            newCrate.CrateReference = new (AddressableCreator.GetGUIDFromObject(newCrate));
 
             string cratePath = "Assets/SDK/pallets/" + PallletWindow.selectedPallet.Title + "_Crates";
             if (!System.IO.Directory.Exists(cratePath))

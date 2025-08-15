@@ -6,7 +6,7 @@ using UnityEngine.AddressableAssets;
 namespace AnalogSDK
 {
     [CreateAssetMenu(menuName = "AnalogSDK/Spawnable Crate")]
-    public class SpawnableCrate : TCrate<GameObject>
+    public class SpawnableCrate : TCrate<Object>
     {
         public virtual async Task<GameObject> SpawnCrate(Vector3 worldPosition, Quaternion worldRotation, Transform parent = null)
         {
