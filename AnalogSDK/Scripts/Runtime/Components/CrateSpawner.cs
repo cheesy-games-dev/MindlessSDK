@@ -17,30 +17,34 @@ namespace AnalogSDK {
         private MeshRenderer meshRenderer;
         private GameObject combinedMeshObject;
 
-        protected virtual async void Start() {
+        public virtual void Start()
+        {
             Validate();
             CrateSpawners.Add(this);
-            if(barcode.crate) barcode.Barcode = barcode.crate.Barcode;
+            if (barcode.crate) barcode.Barcode = barcode.crate.Barcode;
             //AssetWarehouse.TryGetCrateByBarcode(barcode.Barcode, out Crate crate);
             //barcode.crate = crate as SpawnableCrate;
-            if (!manual && canSpawn) {
-                await SpawnCrate();
+            if (!manual && canSpawn)
+            {
+                SpawnCrate();
             }
         }
 
-        protected virtual void OnDestroy() {
+        public virtual void OnDestroy() {
             CrateSpawners.Remove(this);
         }
 
-        public virtual async Task<GameObject> SpawnCrate() {
-            if (canSpawn) {
+        public virtual GameObject SpawnCrate()
+        {
+            if (canSpawn)
+            {
                 var task = barcode.crate.SpawnCrate(transform.position, transform.rotation);
-                await task;
-                spawnedCrate = task.Result;
+                spawnedCrate = task;
                 OnSpawnedCrate?.Invoke(this, spawnedCrate);
                 Debug.Log($"Spawned crate: {barcode.crate.name}.");
             }
-            else {
+            else
+            {
                 if (spawnedCrate && canSpawnOnce)
                     Debug.LogWarning("A crate has already been spawned. Only one crate can be spawned.");
                 else
@@ -58,7 +62,7 @@ namespace AnalogSDK {
             return spawnedCrate;
         }
 
-        protected virtual void VisualizeCombinedMesh() {
+        public virtual void VisualizeCombinedMesh() {
             if (combinedMeshObject == null) {
                 combinedMeshObject = new GameObject("CombinedMeshObject");
                 combinedMeshObject.transform.SetParent(transform);
@@ -73,7 +77,7 @@ namespace AnalogSDK {
             combinedMeshObject.transform.rotation = transform.rotation;
         }
 
-        protected virtual void OnDrawGizmos() {
+        public virtual void OnDrawGizmos() {
             if (barcode.crate != null && barcode.crate.combinedMesh != null) {
                 Gizmos.color = barcode.crate.gizmoColor;
 

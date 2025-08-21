@@ -17,7 +17,7 @@ namespace AnalogSDK
             StartCoroutine(LoadSceneWithDelay());
         }
 
-        protected virtual IEnumerator LoadSceneWithDelay()
+        public virtual IEnumerator LoadSceneWithDelay()
         {
             if (LoadedEvent != null)
             {

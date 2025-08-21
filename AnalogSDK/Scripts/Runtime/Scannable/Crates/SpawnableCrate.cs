@@ -7,7 +7,7 @@ namespace AnalogSDK
     [CreateAssetMenu(menuName = "AnalogSDK/Spawnable Crate")]
     public class SpawnableCrate : TCrate<Object>
     {
-        public virtual async Task<GameObject> SpawnCrate(Vector3 worldPosition, Quaternion worldRotation, Transform parent = null)
+        public virtual GameObject SpawnCrate(Vector3 worldPosition, Quaternion worldRotation, Transform parent = null)
         {
             GameObject spawned = Instantiate(CrateReference.Asset) as GameObject;
             spawned.transform.SetPositionAndRotation(worldPosition, worldRotation);
@@ -16,7 +16,7 @@ namespace AnalogSDK
         }
         public virtual GameObject SpawnCrate(Transform parent)
         {
-            return SpawnCrate(parent.position, parent.rotation, parent).Result;
+            return SpawnCrate(parent.position, parent.rotation, parent);
         }
     }
 }
