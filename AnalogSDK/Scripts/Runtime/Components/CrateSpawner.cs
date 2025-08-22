@@ -11,7 +11,7 @@ namespace AnalogSDK {
         public bool canSpawnOnce = true;
         public UltEvent<CrateSpawner, GameObject> OnSpawnedCrate;
         [HideInInspector] public GameObject spawnedCrate;
-        public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && barcode.crate.CrateReference.Asset;
+        public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && barcode.crate.CrateReference.MainAsset.Asset;
         private bool gizmoLogged = false;
         private MeshFilter meshFilter;
         private MeshRenderer meshRenderer;

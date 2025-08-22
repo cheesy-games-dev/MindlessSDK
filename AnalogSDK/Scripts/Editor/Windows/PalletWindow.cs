@@ -5,10 +5,13 @@ namespace AnalogSDK.Editor
 {
     public class PallletWindow : EditorWindow
     {
-        public string palletTitle = "New Pallet";
-        public string palletBarcode = "Barcode";
-        public string palletAuthor = "Author";
-        public string palletVersion = "1.0";
+        public const string titleDummy = "title";
+        public static string palletTitle = "New Pallet";
+        private static string _palletBarcode = "Barcode";
+        public static string palletBarcode => _palletBarcode.ToLower().Replace(" ", "");
+        public static string palletAuthor = "Author";
+        public static string palletVersion = "1.0";
+        public static string path => $"Assets/SDK/pallets/{palletBarcode}";
         public static Pallet selectedPallet;
         [MenuItem("AnalogSDK/Editor/Pallet/Editor")]
         public static void OpenWindow()
@@ -30,15 +33,14 @@ namespace AnalogSDK.Editor
             }
         }
 
-        public void CreatePallet()
+        public static void CreatePallet()
         {
-            string path = "Assets/SDK/pallets";
             if (!System.IO.Directory.Exists(path))
             {
                 System.IO.Directory.CreateDirectory(path);
             }
 
-            palletBarcode = $"{palletAuthor}.{palletTitle}";
+            _palletBarcode = $"{palletAuthor}.{palletTitle}";
 
             Pallet newPallet = CreateInstance<Pallet>();
             newPallet.Title = palletTitle;
@@ -50,6 +52,7 @@ namespace AnalogSDK.Editor
             //AddPalletToAddressables(newPallet);
             AssetDatabase.SaveAssets();
             selectedPallet = newPallet;
+            EditorUtility.DisplayDialog("Pallet Created", $"Pallet {newPallet.Title} has been created for pallet {selectedPallet.Title}.", "OK");
         }
 
         public void SelectPallet()

@@ -56,8 +56,8 @@ namespace AnalogSDK
                     return false; // Already triggered
                 }
                 triggeredParents.Add(current);
-                return true;
                 current = current.parent;
+                return true;
             }
 
             return false;

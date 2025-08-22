@@ -1,15 +1,14 @@
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace AnalogSDK
 {
     public abstract class Crate : Scannable
     {
-        public string Name;
         public string Description;
         public bool Redacted = false;
         public string[] Tags;
         public Pallet Pallet;
-        [HideInInspector] public Mesh combinedMesh;
         public Color gizmoColor = Color.white;
         public override string ToString()
         {
@@ -19,6 +18,7 @@ namespace AnalogSDK
 
     public abstract class TCrate<T> : Crate where T : Object
     {
+        [HideInInspector] public Mesh combinedMesh;
         public ObjectBarcode<T> CrateReference;
     }
 
@@ -27,7 +27,7 @@ namespace AnalogSDK
     {
         private string _barcode;
         public string Barcode { get => _barcode; set { _barcode = value; } }
-        public T Asset;
+        public AssetReferenceT<T> MainAsset;
     }
 
     [System.Serializable]

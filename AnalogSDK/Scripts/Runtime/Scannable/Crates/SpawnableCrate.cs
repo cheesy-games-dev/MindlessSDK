@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace AnalogSDK
 {
@@ -9,7 +10,8 @@ namespace AnalogSDK
     {
         public virtual GameObject SpawnCrate(Vector3 worldPosition, Quaternion worldRotation, Transform parent = null)
         {
-            GameObject spawned = Instantiate(CrateReference.Asset) as GameObject;
+            var handle = Addressables.InstantiateAsync(CrateReference.MainAsset);
+            GameObject spawned = handle.Result;
             spawned.transform.SetPositionAndRotation(worldPosition, worldRotation);
             spawned.transform.parent = parent;
             return spawned;

@@ -1,3 +1,4 @@
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -35,13 +36,13 @@ namespace AnalogSDK.Editor
             {
                 var spawnable = target as SpawnableCrate;
                 if (!spawnable) return;
-                if (spawnable.CrateReference.Asset == null)
+                if (spawnable.CrateReference.MainAsset == null)
                 {
                     Debug.LogWarning("No crate prefab set.");
                     return;
                 }
 
-                MeshFilter[] meshFilters = (spawnable.CrateReference.Asset as GameObject).GetComponentsInChildren<MeshFilter>();
+                MeshFilter[] meshFilters = (spawnable.CrateReference.MainAsset.Asset as GameObject).GetComponentsInChildren<MeshFilter>();
                 CombineInstance[] combine = new CombineInstance[meshFilters.Length];
 
                 int i = 0;
@@ -67,12 +68,14 @@ namespace AnalogSDK.Editor
                     Debug.LogWarning("No combined mesh to save.");
                     return;
                 }
-                string path = AssetDatabase.GetAssetPath(spawnable) + "/meshes";
-                string meshPath = $"{path}/{spawnable.Name}_CombinedMesh.asset";
+                string previewFolderName = "preview";
+                string path = AssetDatabase.GetAssetPath(spawnable.Pallet).Replace(spawnable.Pallet.name+".asset","");
+                string preivewPath = Path.Combine(path, previewFolderName);
+                string meshPath = $"{preivewPath}/{spawnable.Barcode}_CombinedMesh.asset";
 
-                if (!AssetDatabase.IsValidFolder(path))
+                if (!AssetDatabase.IsValidFolder(preivewPath))
                 {
-                    AssetDatabase.CreateFolder(path, "meshes");
+                    AssetDatabase.CreateFolder(path, previewFolderName);
                 }
 
                 AssetDatabase.CreateAsset(spawnable.combinedMesh, meshPath);

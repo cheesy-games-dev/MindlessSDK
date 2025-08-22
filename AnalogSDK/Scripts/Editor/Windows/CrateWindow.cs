@@ -1,15 +1,18 @@
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
+using System;
+using Object = UnityEngine.Object;
 
 namespace AnalogSDK.Editor
 {
     public class CrateWindow : EditorWindow
     {
         protected static PallletWindow pallletWindow;
-        protected string crateTitle = "New Crate";
+        protected string crateTitle = "title";
         protected string crateBarcode = "emptynullbarcode";
         protected string crateDescription = "Description of the crate.";
+        public string cratePath => $"{PallletWindow.path}/{PallletWindow.selectedPallet.Barcode}_Crates";
         protected List<string> crateTags = new List<string>();
         protected string newTag = "";
         protected Object ObjectReference;
@@ -49,16 +52,27 @@ namespace AnalogSDK.Editor
                     CreateCrateUI();
                 }
             }
-
-            EditorGUILayout.EndScrollView();
         }
-        public static bool LevelCrate = false;
+        public enum CrateType
+        {
+            SPAWNABLE,
+            LEVEL,
+            AVATAR,
+            VFX,
+            BGM,
+            SFX,
+        }
+        public static CrateType crateType;
         public virtual void CreateCrateUI()
         {
             EditorGUILayout.Space();
             GUILayout.Label("Crate Settings", EditorStyles.boldLabel);
-            LevelCrate = GUILayout.Toggle(LevelCrate, "Is Level Crate");
+            crateType = (CrateType)EditorGUILayout.EnumPopup("Crate Type", crateType);
             crateTitle = EditorGUILayout.TextField("Crate Title", crateTitle);
+            if (crateTitle == "title")
+            {
+                return;
+            }
             crateDescription = EditorGUILayout.TextField("Crate Description", crateDescription);
 
             EditorGUILayout.LabelField("Tags");
@@ -107,16 +121,42 @@ namespace AnalogSDK.Editor
 
 
             crateBarcode = $"{PallletWindow.selectedPallet.Barcode}.{crateTitle}";
+            TCrate<Object> newCrate = null;
 
-            TCrate<Object> newCrate = LevelCrate ? CreateInstance<LevelCrate>() : CreateInstance<SpawnableCrate>();
-            newCrate.Name = crateTitle;
+            switch (crateType)
+            {
+                case CrateType.SPAWNABLE:
+                    newCrate = CreateInstance<SpawnableCrate>();
+                    break;
+                case CrateType.LEVEL:
+                    newCrate = CreateInstance<LevelCrate>();
+                    break;
+                case CrateType.AVATAR:
+                    //newCrate = CreateInstance<SpawnableCrate>();
+                    Debug.LogError("Not Supported in this game");
+                    break;
+                case CrateType.VFX:
+                    //newCrate = CreateInstance<SpawnableCrate>();
+                    Debug.LogError("Not Supported in this game");
+                    break;
+                case CrateType.BGM:
+                    //newCrate = CreateInstance<SpawnableCrate>();
+                    Debug.LogError("Not Supported in this game");
+                    break;
+                case CrateType.SFX:
+                    //newCrate = CreateInstance<SpawnableCrate>();
+                    Debug.LogError("Not Supported in this game");
+                    break;
+            }
+            newCrate.Title = crateTitle;
             newCrate.Barcode = crateBarcode;
             newCrate.Description = crateDescription;
             newCrate.Tags = crateTags.ToArray();
             newCrate.Pallet = PallletWindow.selectedPallet;
-            newCrate.CrateReference.Asset = ObjectReference;
+            string guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(ObjectReference));
+            newCrate.CrateReference.MainAsset = new(guid);
+            if (!newCrate.CrateReference.MainAsset.IsValid()) Debug.LogWarning("Make sure there are no errors in the console and the referenced object is marked as an addersable", ObjectReference);
 
-            string cratePath = "Assets/SDK/pallets/" + PallletWindow.selectedPallet.Title + "_Crates";
             if (!System.IO.Directory.Exists(cratePath))
             {
                 System.IO.Directory.CreateDirectory(cratePath);
@@ -140,7 +180,9 @@ namespace AnalogSDK.Editor
             AssetDatabase.SaveAssets();
 
             isCreatingCrate = false;
-            EditorUtility.DisplayDialog("Crate Created", $"Crate {newCrate.Name} has been created for pallet {PallletWindow.selectedPallet.Title}.", "OK");
+            EditorUtility.DisplayDialog("Crate Created", $"Crate {newCrate.Title} has been created for pallet {PallletWindow.selectedPallet.Title}.", "OK");
+            crateTitle = PallletWindow.titleDummy;
         }
+        
     }
 }

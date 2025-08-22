@@ -8,9 +8,9 @@ namespace AnalogSDK
         public string Barcode
         {
             get => barcode;
-            set { barcode = value; }
+            set { barcode = value.ToLower().Replace(" ", ""); }
         }
-
+        public string Title;
     }
 
     public interface IScannable
