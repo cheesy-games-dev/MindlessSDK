@@ -10,6 +10,11 @@ namespace AnalogSDK
         public string[] Tags;
         public Pallet Pallet;
         public Color gizmoColor = Color.white;
+        [ContextMenu("Generate Barcode")]
+        public void GenerateBarcode()
+        {
+            Barcode = $"{Pallet.Author}.{Title}";
+        }
         public override string ToString()
         {
             return Barcode;
