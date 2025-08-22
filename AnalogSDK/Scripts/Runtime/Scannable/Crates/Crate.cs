@@ -27,6 +27,7 @@ namespace AnalogSDK
     {
         private string _barcode;
         public string Barcode { get => _barcode; set { _barcode = value; } }
+        public T Asset => MainAsset.Asset as T;
         public AssetReferenceT<T> MainAsset;
     }
 

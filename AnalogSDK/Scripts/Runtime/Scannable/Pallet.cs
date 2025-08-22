@@ -1,14 +1,14 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 
 namespace AnalogSDK
 {
     public class Pallet : Scannable
     {
-        public string Title;
         public string Author;
         public string Version;
-        public Crate[] Crates;
+        public List<Crate> Crates;
+
+        public void SortCrates() => Crates.Sort();
     }
 }

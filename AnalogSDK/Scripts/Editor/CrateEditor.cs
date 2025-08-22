@@ -69,9 +69,13 @@ namespace AnalogSDK.Editor
                     return;
                 }
                 string previewFolderName = "preview";
+                Debug.Log(previewFolderName);
                 string path = AssetDatabase.GetAssetPath(spawnable.Pallet).Replace(spawnable.Pallet.name+".asset","");
+                Debug.Log(path);
                 string preivewPath = Path.Combine(path, previewFolderName);
+                Debug.Log(preivewPath);
                 string meshPath = $"{preivewPath}/{spawnable.Barcode}_CombinedMesh.asset";
+                Debug.Log(meshPath);
 
                 if (!AssetDatabase.IsValidFolder(preivewPath))
                 {

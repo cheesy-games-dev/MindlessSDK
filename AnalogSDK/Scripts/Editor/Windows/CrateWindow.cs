@@ -69,8 +69,9 @@ namespace AnalogSDK.Editor
             GUILayout.Label("Crate Settings", EditorStyles.boldLabel);
             crateType = (CrateType)EditorGUILayout.EnumPopup("Crate Type", crateType);
             crateTitle = EditorGUILayout.TextField("Crate Title", crateTitle);
-            if (crateTitle == "title")
+            if (PallletWindow.NameError(crateTitle, PallletWindow.titleDummy))
             {
+                //EditorGUILayout.HelpBox($"Name cannot be: {crateTitle}", MessageType.Error, true);
                 return;
             }
             crateDescription = EditorGUILayout.TextField("Crate Description", crateDescription);
@@ -118,7 +119,6 @@ namespace AnalogSDK.Editor
                 EditorUtility.DisplayDialog("Error", "Please select or create a pallet first.", "OK");
                 return;
             }
-
 
             crateBarcode = $"{PallletWindow.selectedPallet.Barcode}.{crateTitle}";
             TCrate<Object> newCrate = null;
@@ -168,12 +168,11 @@ namespace AnalogSDK.Editor
 
             if (PallletWindow.selectedPallet.Crates == null)
             {
-                PallletWindow.selectedPallet.Crates = new Crate[] { newCrate };
+                PallletWindow.selectedPallet.Crates = new () { newCrate };
             }
             else
             {
-                List<Crate> crateList = new List<Crate>(PallletWindow.selectedPallet.Crates) { newCrate };
-                PallletWindow.selectedPallet.Crates = crateList.ToArray();
+                PallletWindow.selectedPallet.Crates.Add(newCrate);
             }
 
             EditorUtility.SetDirty(PallletWindow.selectedPallet);

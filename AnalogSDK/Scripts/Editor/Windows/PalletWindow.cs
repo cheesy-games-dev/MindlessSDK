@@ -19,11 +19,18 @@ namespace AnalogSDK.Editor
             PallletWindow window = GetWindow<PallletWindow>("Pallet Editor");
             window.Show();
         }
+        public static bool NameError(string victim, string enemy)
+        {
+            bool error = victim == enemy || string.IsNullOrEmpty(victim) || string.IsNullOrWhiteSpace(victim);
+            if(error) EditorGUILayout.HelpBox($"Name cannot be: {victim}", MessageType.Error, true);
+            return error;
+        }
         public void OnGUI()
         {
             EditorGUILayout.Space();
             GUILayout.Label("Pallet Settings", EditorStyles.boldLabel);
             palletTitle = EditorGUILayout.TextField("Pallet Title", palletTitle);
+            if (NameError(palletTitle, titleDummy))return;
             palletAuthor = EditorGUILayout.TextField("Author", palletAuthor);
             palletVersion = EditorGUILayout.TextField("Version", palletVersion);
 
@@ -53,6 +60,7 @@ namespace AnalogSDK.Editor
             AssetDatabase.SaveAssets();
             selectedPallet = newPallet;
             EditorUtility.DisplayDialog("Pallet Created", $"Pallet {newPallet.Title} has been created for pallet {selectedPallet.Title}.", "OK");
+            palletTitle = titleDummy;
         }
 
         public void SelectPallet()
