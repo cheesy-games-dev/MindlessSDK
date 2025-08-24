@@ -21,7 +21,7 @@ namespace AnalogSDK
             behaviours = GetComponentsInChildren<AnalogBehaviour>().ToList();
             TryGetComponent(out poolee);
         }
-#region  add
+        #region  add
         private void AddValidates()
         {
             GetComponentsInChildren<Rigidbody>().ToList().ForEach(AddAnalogBody);
@@ -44,7 +44,7 @@ namespace AnalogSDK
             if (TryGetComponent<AnalogBody>(out var analogbody)) Destroy(analogbody);
             body.AddComponent<AnalogBody>();
         }
-#endregion
+        #endregion
         private void ValidateForEach(IValidate validate)
         {
             validate.Validate();
