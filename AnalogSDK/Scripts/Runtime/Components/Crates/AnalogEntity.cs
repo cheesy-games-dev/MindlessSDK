@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace AnalogSDK
 {
+    [DisallowMultipleComponent]
     public class AnalogEntity : ValidateBehaviour
     {
         public List<AnalogBody> bodies = new();

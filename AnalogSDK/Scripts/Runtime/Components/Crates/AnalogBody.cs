@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace AnalogSDK
 {
+    [DisallowMultipleComponent]
     public class AnalogBody : AnalogBehaviour, IValidate
     {
         public Object body => Rigidbody ? Rigidbody : ArticulationBody;

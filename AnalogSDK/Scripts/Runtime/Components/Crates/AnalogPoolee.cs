@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace AnalogSDK
 {
+    [DisallowMultipleComponent]
     public class AnalogPoolee : AnalogBehaviour, IValidate
     {
         public static List<AnalogPoolee> Poolees = new();
