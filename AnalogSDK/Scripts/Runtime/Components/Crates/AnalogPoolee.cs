@@ -8,10 +8,16 @@ namespace AnalogSDK
     {
         public static List<AnalogPoolee> Poolees = new();
         public bool isSpawned;
-        public override void Validate()
+        public override void Start()
         {
             isSpawned = false;
             Spawn();
+        }
+
+        public override void Validate()
+        {
+            Poolees.Clear();
+            isSpawned = false;
         }
 
         public virtual void Spawn()
