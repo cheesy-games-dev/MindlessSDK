@@ -41,6 +41,7 @@ namespace AnalogSDK
 
         private void AddAnalogBody(GameObject body)
         {
+            if (TryGetComponent<AnalogBody>(out var analogbody)) Destroy(analogbody);
             body.AddComponent<AnalogBody>();
         }
 #endregion
