@@ -15,15 +15,35 @@ namespace AnalogSDK
 
         public override void Validate()
         {
-            validates = GetComponentsInChildren<IValidate>().ToList();
-            validates.Remove(this);
-            validates.ForEach(ValidateForEach);
-            bodies = GetComponentsInChildren<AnalogBody>().ToList();
+            AddValidates();
+            AddBodies();
             colliders = GetComponentsInChildren<Collider>().ToList();
             behaviours = GetComponentsInChildren<AnalogBehaviour>().ToList();
             TryGetComponent(out poolee);
         }
+#region  add
+        private void AddValidates()
+        {
+            GetComponentsInChildren<Rigidbody>().ToList().ForEach(AddAnalogBody);
+            GetComponentsInChildren<ArticulationBody>().ToList().ForEach(AddAnalogBody);
+            bodies = GetComponentsInChildren<AnalogBody>().ToList();
+        }
 
+        private void AddBodies()
+        {
+            validates = GetComponentsInChildren<IValidate>().ToList();
+            validates.Remove(this);
+            validates.ForEach(ValidateForEach);
+        }
+
+        private void AddAnalogBody(ArticulationBody body) => AddAnalogBody(body.gameObject);
+        private void AddAnalogBody(Rigidbody body) => AddAnalogBody(body.gameObject);
+
+        private void AddAnalogBody(GameObject body)
+        {
+            body.AddComponent<AnalogBody>();
+        }
+#endregion
         private void ValidateForEach(IValidate validate)
         {
             validate.Validate();
