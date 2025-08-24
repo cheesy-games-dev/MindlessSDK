@@ -22,14 +22,14 @@ namespace AnalogSDK
             TryGetComponent(out poolee);
         }
         #region  add
-        private void AddValidates()
+        private void AddBodies()
         {
             GetComponentsInChildren<Rigidbody>().ToList().ForEach(AddAnalogBody);
             GetComponentsInChildren<ArticulationBody>().ToList().ForEach(AddAnalogBody);
             bodies = GetComponentsInChildren<AnalogBody>().ToList();
         }
 
-        private void AddBodies()
+        private void AddValidates()
         {
             validates = GetComponentsInChildren<IValidate>().ToList();
             validates.Remove(this);
@@ -41,7 +41,7 @@ namespace AnalogSDK
 
         private void AddAnalogBody(GameObject body)
         {
-            if (TryGetComponent<AnalogBody>(out var analogbody)) Destroy(analogbody);
+            if (body.GetComponent<AnalogBody>()) return;
             body.AddComponent<AnalogBody>();
         }
         #endregion
