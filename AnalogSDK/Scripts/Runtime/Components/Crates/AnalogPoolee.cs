@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace AnalogSDK
 {
-    public class AnalogPoolee : AnalogBehaviour
+    public class AnalogPoolee : AnalogBehaviour, IValidate
     {
-        public static List<AnalogPoolee> Poolees;
+        public static List<AnalogPoolee> Poolees = new();
         public bool isSpawned;
-        void Awake()
+        public override void Validate()
         {
             isSpawned = false;
             Spawn();

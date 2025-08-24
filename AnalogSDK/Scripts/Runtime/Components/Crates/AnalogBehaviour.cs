@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace AnalogSDK
 {
-    public class AnalogBehaviour : MonoBehaviour
+    public class AnalogBehaviour : ValidateBehaviour
     {
         
     }
