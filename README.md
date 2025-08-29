@@ -1,6 +1,6 @@
 # AnalogSDK.
 
-## Current Devs:
+## Devs of this branch:
 
 freakycheesy-most of the changes
 
