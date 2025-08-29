@@ -1,8 +1,6 @@
-# Cheesy's Branch of AnalogSDK.
+# FreakyCheesy's Branch of AnalogSDK.
 
-## Devs of this branch:
-
-freakycheesy-most of the changes
+I uhh freakycheesy declare this as my branch of an older version of analog
 
 ## Original Developers:
 
