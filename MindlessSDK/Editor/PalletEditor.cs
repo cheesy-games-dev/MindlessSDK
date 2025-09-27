@@ -14,7 +14,7 @@ namespace MindlessSDK.Editor
             var pallet = (Pallet)target;
             if (GUILayout.Button("Create New Crate"))
             {
-                PallletWindow.selectedPallet = pallet;
+                PalletWindow.selectedPallet = pallet;
                 CrateWindow.OpenWindow();
             }
         }

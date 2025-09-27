@@ -3,18 +3,19 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using Object = UnityEngine.Object;
+using System.IO;
 
 namespace MindlessSDK.Editor
 {
     public class CrateWindow : EditorWindow
     {
-        protected static PallletWindow pallletWindow;
+        protected static PalletWindow pallletWindow;
         protected string crateTitle = "title";
         protected string crateBarcode = "emptynullbarcode";
         protected string crateDescription = "Description of the crate.";
-        public string cratePath => $"{PallletWindow.path}/{PallletWindow.selectedPallet.Barcode}_Crates";
         protected List<string> crateTags = new List<string>();
         protected string newTag = "";
+        protected Object previousObjectReference;
         protected Object ObjectReference;
 
         protected bool isCreatingCrate = false;
@@ -38,9 +39,9 @@ namespace MindlessSDK.Editor
             {
                 pallletWindow.SelectPallet();
             }
-            if (PallletWindow.selectedPallet != null)
+            if (PalletWindow.selectedPallet != null)
             {
-                GUILayout.Label("Selected Pallet: " + PallletWindow.selectedPallet.Title);
+                GUILayout.Label("Selected Pallet: " + PalletWindow.selectedPallet.Title);
 
                 if (GUILayout.Button("Create Crate"))
                 {
@@ -69,11 +70,6 @@ namespace MindlessSDK.Editor
             GUILayout.Label("Crate Settings", EditorStyles.boldLabel);
             crateType = (CrateType)EditorGUILayout.EnumPopup("Crate Type", crateType);
             crateTitle = EditorGUILayout.TextField("Crate Title", crateTitle);
-            if (PallletWindow.NameError(crateTitle, PallletWindow.titleDummy))
-            {
-                //EditorGUILayout.HelpBox($"Name cannot be: {crateTitle}", MessageType.Error, true);
-                return;
-            }
             crateDescription = EditorGUILayout.TextField("Crate Description", crateDescription);
 
             EditorGUILayout.LabelField("Tags");
@@ -98,9 +94,14 @@ namespace MindlessSDK.Editor
                     newTag = "";
                 }
             }
-
-            ObjectReference = EditorGUILayout.ObjectField("Select Crate Prefab", ObjectReference, typeof(Object), false);
-
+            previousObjectReference = EditorGUILayout.ObjectField("Select Crate Prefab", previousObjectReference, typeof(Object), false);
+            if (ObjectReference != previousObjectReference) crateTitle = previousObjectReference.name;
+            ObjectReference = previousObjectReference;
+            if (PalletWindow.NameError(crateTitle, PalletWindow.titleDummy))
+            {
+                //EditorGUILayout.HelpBox($"Name cannot be: {crateTitle}", MessageType.Error, true);
+                return;
+            }
             if (GUILayout.Button("Save Crate"))
             {
                 SaveCrate();
@@ -114,13 +115,13 @@ namespace MindlessSDK.Editor
 
         public virtual void SaveCrate()
         {
-            if (PallletWindow.selectedPallet == null)
+            if (PalletWindow.selectedPallet == null)
             {
                 EditorUtility.DisplayDialog("Error", "Please select or create a pallet first.", "OK");
                 return;
             }
 
-            crateBarcode = $"{PallletWindow.selectedPallet.Barcode}.{crateTitle}";
+            crateBarcode = $"{PalletWindow.selectedPallet.Barcode}.{crateTitle}";
             TCrate<Object> newCrate = null;
 
             switch (crateType)
@@ -152,35 +153,31 @@ namespace MindlessSDK.Editor
             newCrate.Barcode = crateBarcode;
             newCrate.Description = crateDescription;
             newCrate.Tags = crateTags.ToArray();
-            newCrate.Pallet = PallletWindow.selectedPallet;
+            newCrate.Pallet = PalletWindow.selectedPallet;
             string guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(ObjectReference));
             newCrate.CrateReference.MainAsset = new(guid);
             if (!newCrate.CrateReference.MainAsset.IsValid()) Debug.LogWarning("Make sure there are no errors in the console and the referenced object is marked as an addersable", ObjectReference);
-
-            if (!System.IO.Directory.Exists(cratePath))
-            {
-                System.IO.Directory.CreateDirectory(cratePath);
-            }
-
-            AssetDatabase.CreateAsset(newCrate, cratePath + "/" + newCrate.Barcode + ".crate.asset");
+            AssetDatabase.CreateAsset(newCrate, PalletWindow.selectedPalletPath + "/" + newCrate.Barcode + ".crate.asset");
             AssetDatabase.SaveAssets();
 
 
-            if (PallletWindow.selectedPallet.Crates == null)
+            if (PalletWindow.selectedPallet.Crates == null)
             {
-                PallletWindow.selectedPallet.Crates = new () { newCrate };
+                PalletWindow.selectedPallet.Crates = new() { newCrate };
             }
             else
             {
-                PallletWindow.selectedPallet.Crates.Add(newCrate);
+                PalletWindow.selectedPallet.Crates.Add(newCrate);
             }
 
-            EditorUtility.SetDirty(PallletWindow.selectedPallet);
+            EditorUtility.SetDirty(PalletWindow.selectedPallet);
             AssetDatabase.SaveAssets();
 
             isCreatingCrate = false;
-            EditorUtility.DisplayDialog("Crate Created", $"Crate {newCrate.Title} has been created for pallet {PallletWindow.selectedPallet.Title}.", "OK");
-            crateTitle = PallletWindow.titleDummy;
+            EditorUtility.DisplayDialog("Crate Created", $"Crate {newCrate.Title} has been created for pallet {PalletWindow.selectedPallet.Title}.", "OK");
+            crateTitle = PalletWindow.titleDummy;
+            previousObjectReference = null;
+            ObjectReference = null;
         }
         
     }

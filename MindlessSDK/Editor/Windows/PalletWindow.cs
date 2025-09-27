@@ -3,20 +3,22 @@ using UnityEngine;
 
 namespace MindlessSDK.Editor
 {
-    public class PallletWindow : EditorWindow
+    public class PalletWindow : EditorWindow
     {
-        public const string titleDummy = "title";
-        public static string palletTitle = "New Pallet";
-        private static string _palletBarcode = "Barcode";
+        public const string titleDummy = "";
+        public static string palletTitle = "";
+        private static string _palletBarcode = "";
         public static string palletBarcode => _palletBarcode.ToLower().Replace(" ", "");
-        public static string palletAuthor = "Author";
-        public static string palletVersion = "1.0";
-        public static string path => $"Assets/SDK/pallets/{palletBarcode}";
+        public static string palletAuthor = "";
+        public static string palletVersion = "";
+        public const string parentPath = "Assets/_MindlessAssets/_Pallets";
+        public static string path => $"{parentPath}/_{palletBarcode}";
+        public static string selectedPalletPath => $"{parentPath}/_{selectedPallet.Barcode}";
         public static Pallet selectedPallet;
         [MenuItem("MindlessSDK/Editor/Pallet/Editor")]
         public static void OpenWindow()
         {
-            PallletWindow window = GetWindow<PallletWindow>("Pallet Editor");
+            PalletWindow window = GetWindow<PalletWindow>("Pallet Editor");
             window.Show();
         }
         public static bool NameError(string victim, string enemy)
@@ -65,8 +67,7 @@ namespace MindlessSDK.Editor
 
         public void SelectPallet()
         {
-            string path = "Assets/SDK/pallets";
-            string[] palletGuids = AssetDatabase.FindAssets("t:Pallet", new[] { path });
+            string[] palletGuids = AssetDatabase.FindAssets("t:Pallet", new[] { parentPath });
 
             GenericMenu menu = new GenericMenu();
 
