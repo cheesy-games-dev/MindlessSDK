@@ -11,9 +11,7 @@ namespace MindlessSDK.Editor
         public static string palletBarcode => _palletBarcode.ToLower().Replace(" ", "");
         public static string palletAuthor = "";
         public static string palletVersion = "";
-        public const string parentPath = "Assets/_MindlessAssets/_Pallets";
-        public static string path => $"{parentPath}/_{palletBarcode}";
-        public static string selectedPalletPath => $"{parentPath}/_{selectedPallet.Barcode}";
+        public static string selectedPalletPath => $"{EditorAssetWarehouse.palletsPath}/_{selectedPallet.Barcode}";
         public static Pallet selectedPallet;
         [MenuItem("MindlessSDK/Editor/Pallet/Editor")]
         public static void OpenWindow()
@@ -44,9 +42,9 @@ namespace MindlessSDK.Editor
 
         public static void CreatePallet()
         {
-            if (!System.IO.Directory.Exists(path))
+            if (!System.IO.Directory.Exists(EditorAssetWarehouse.palletsPath))
             {
-                System.IO.Directory.CreateDirectory(path);
+                System.IO.Directory.CreateDirectory(EditorAssetWarehouse.palletsPath);
             }
 
             _palletBarcode = $"{palletAuthor}.{palletTitle}";
@@ -57,7 +55,7 @@ namespace MindlessSDK.Editor
             newPallet.Author = palletAuthor;
             newPallet.Version = palletVersion;
 
-            AssetDatabase.CreateAsset(newPallet, path + "/" + newPallet.Barcode + ".pallet.asset");
+            AssetDatabase.CreateAsset(newPallet, selectedPalletPath + "/" + newPallet.Barcode + ".pallet.asset");
             //AddPalletToAddressables(newPallet);
             AssetDatabase.SaveAssets();
             selectedPallet = newPallet;
@@ -67,7 +65,7 @@ namespace MindlessSDK.Editor
 
         public void SelectPallet()
         {
-            string[] palletGuids = AssetDatabase.FindAssets("t:Pallet", new[] { parentPath });
+            string[] palletGuids = AssetDatabase.FindAssets("t:Pallet", new[] { EditorAssetWarehouse.palletsPath });
 
             GenericMenu menu = new GenericMenu();
 

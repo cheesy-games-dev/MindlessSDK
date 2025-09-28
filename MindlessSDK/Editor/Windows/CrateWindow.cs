@@ -122,7 +122,7 @@ namespace MindlessSDK.Editor
             }
 
             crateBarcode = $"{PalletWindow.selectedPallet.Barcode}.{crateTitle}";
-            TCrate<Object> newCrate = null;
+            Crate newCrate = null;
 
             switch (crateType)
             {
@@ -154,9 +154,7 @@ namespace MindlessSDK.Editor
             newCrate.Description = crateDescription;
             newCrate.Tags = crateTags.ToArray();
             newCrate.Pallet = PalletWindow.selectedPallet;
-            string guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(ObjectReference));
-            newCrate.CrateReference.MainAsset = new(guid);
-            if (!newCrate.CrateReference.MainAsset.IsValid()) Debug.LogWarning("Make sure there are no errors in the console and the referenced object is marked as an addersable", ObjectReference);
+            newCrate.CrateReference = ObjectReference;
             AssetDatabase.CreateAsset(newCrate, PalletWindow.selectedPalletPath + "/" + newCrate.Barcode + ".crate.asset");
             AssetDatabase.SaveAssets();
 

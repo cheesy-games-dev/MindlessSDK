@@ -27,22 +27,25 @@ namespace MindlessSDK.Editor
             }
             if (GUILayout.Button("Create Spawner"))
             {
-                new GameObject($"Crate Spawner ({spawnable.Barcode})").AddComponent<CrateSpawner>().barcode = new CrateBarcode<SpawnableCrate>(spawnable.Barcode, spawnable);
+                SpawnableCrate.CreateCrateSpawner(spawnable);
             }
         }
+
         public void RegenerateCombinedMesh()
         {
             foreach (var target in targets)
             {
                 var spawnable = target as SpawnableCrate;
                 if (!spawnable) return;
-                if (spawnable.CrateReference.MainAsset == null)
+                if (spawnable.CrateReference == null)
                 {
                     Debug.LogWarning("No crate prefab set.");
                     return;
                 }
 
-                MeshFilter[] meshFilters = (spawnable.CrateReference.MainAsset.editorAsset as GameObject).GetComponentsInChildren<MeshFilter>();
+                spawnable._crateReference.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+
+                MeshFilter[] meshFilters = (spawnable.CrateReference as GameObject).GetComponentsInChildren<MeshFilter>();
                 CombineInstance[] combine = new CombineInstance[meshFilters.Length];
 
                 int i = 0;
@@ -53,8 +56,8 @@ namespace MindlessSDK.Editor
                     i++;
                 }
 
-                spawnable.combinedMesh = new Mesh();
-                spawnable.combinedMesh.CombineMeshes(combine, true, true);
+                spawnable.CombinedMesh = new Mesh();
+                spawnable.CombinedMesh.CombineMeshes(combine, true, true);
             }
         }
         public void SaveMeshToFolder()
@@ -63,26 +66,20 @@ namespace MindlessSDK.Editor
             {
                 var spawnable = target as SpawnableCrate;
                 if (!spawnable) return;
-                if (spawnable.combinedMesh == null)
+                if (spawnable.CombinedMesh == null)
                 {
                     Debug.LogWarning("No combined mesh to save.");
                     return;
                 }
-                string previewFolderName = "preview";
-                Debug.Log(previewFolderName);
-                string path = AssetDatabase.GetAssetPath(spawnable.Pallet).Replace(spawnable.Pallet.name+".asset","");
-                Debug.Log(path);
-                string preivewPath = Path.Combine(path, previewFolderName);
-                Debug.Log(preivewPath);
-                string meshPath = $"{preivewPath}/{spawnable.Barcode}_CombinedMesh.asset";
+                string meshPath = $"{EditorAssetWarehouse.preivewsMeshesPath}/{spawnable.Barcode}_Preview.asset";
                 Debug.Log(meshPath);
 
-                if (!AssetDatabase.IsValidFolder(preivewPath))
+                if (!AssetDatabase.IsValidFolder(EditorAssetWarehouse.preivewsMeshesPath))
                 {
-                    AssetDatabase.CreateFolder(path, previewFolderName);
+                    AssetDatabase.CreateFolder(EditorAssetWarehouse.mainPath, EditorAssetWarehouse.preivewsMeshesKey);
                 }
 
-                AssetDatabase.CreateAsset(spawnable.combinedMesh, meshPath);
+                AssetDatabase.CreateAsset(spawnable.CombinedMesh, meshPath);
                 AssetDatabase.SaveAssets();
 
                 Debug.Log($"Mesh saved to: {meshPath}");

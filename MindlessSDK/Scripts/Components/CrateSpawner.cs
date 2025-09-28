@@ -11,7 +11,7 @@ namespace MindlessSDK
         public bool canSpawnOnce = true;
         public UltEvent<CrateSpawner, GameObject> OnSpawnedCrate;
         [HideInInspector] public GameObject spawnedCrate;
-        public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && barcode.crate.CrateReference.MainAsset.Asset;
+        public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && barcode.crate.CrateReference;
         private bool gizmoLogged = false;
         private MeshFilter meshFilter;
         private MeshRenderer meshRenderer;
@@ -71,20 +71,20 @@ namespace MindlessSDK
                 meshRenderer = combinedMeshObject.AddComponent<MeshRenderer>();
             }
 
-            meshFilter.mesh = barcode.crate.combinedMesh;
+            meshFilter.mesh = barcode.crate.CombinedMesh;
 
             combinedMeshObject.transform.position = transform.position;
             combinedMeshObject.transform.rotation = transform.rotation;
         }
 
         public virtual void OnDrawGizmos() {
-            if (barcode.crate != null && barcode.crate.combinedMesh != null) {
+            if (barcode.crate != null && barcode.crate.CombinedMesh != null) {
                 Gizmos.color = barcode.crate.gizmoColor;
 
-                Gizmos.DrawMesh(barcode.crate.combinedMesh, transform.position, transform.rotation);
+                Gizmos.DrawMesh(barcode.crate.CombinedMesh, transform.position, transform.rotation);
 
                 Gizmos.color = Color.white;
-                Bounds meshBounds = barcode.crate.combinedMesh.bounds;
+                Bounds meshBounds = barcode.crate.CombinedMesh.bounds;
                 Gizmos.DrawWireCube(transform.position + meshBounds.center, meshBounds.size);
             }
 

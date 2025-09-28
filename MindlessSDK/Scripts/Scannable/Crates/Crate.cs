@@ -10,6 +10,7 @@ namespace MindlessSDK
         public string[] Tags;
         public Pallet Pallet;
         public Color gizmoColor = Color.white;
+        public abstract Object CrateReference { get; set; }
         [ContextMenu("Generate Barcode")]
         public void GenerateBarcode()
         {
@@ -23,17 +24,9 @@ namespace MindlessSDK
 
     public abstract class TCrate<T> : Crate where T : Object
     {
-        [HideInInspector] public Mesh combinedMesh;
-        public ObjectBarcode<T> CrateReference;
-    }
-
-    [System.Serializable]
-    public struct ObjectBarcode<T> : IScannable where T : Object
-    {
-        private string _barcode;
-        public string Barcode { get => _barcode; set { _barcode = value; } }
-        public T Asset => MainAsset.Asset as T;
-        public AssetReferenceT<T> MainAsset;
+        public Mesh CombinedMesh;
+        public T _crateReference;
+        public override Object CrateReference { get => _crateReference; set => _crateReference = value as T; }
     }
 
     [System.Serializable]

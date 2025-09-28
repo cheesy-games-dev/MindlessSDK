@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace MindlessSDK
@@ -10,50 +11,29 @@ namespace MindlessSDK
         public string Version;
         public List<Crate> Crates;
 
-        [ContextMenu("Generate Barcode")]
-        public void GenerateBarcode()
+        [ContextMenu("Generate Barcodes")]
+        public void GenerateBarcodes()
         {
             Barcode = $"{Author}.{Title}";
-        }
-        public void GenerateCrateBarcode(Crate crate)
-        {
-            crate.GenerateBarcode();
+            var crates = Crates.ToList();
+            foreach (var crate in crates)
+            {
+                crate.GenerateBarcode();
+            }
+            Crates = crates;
         }
         [ContextMenu("Sort Crates")]
         public void SortCrates()
         {
-            Crates.Sort();
-        }
-        [ContextMenu("Fix All Barcodes")]
-        public void FixAllCrates()
-        {
-            GenerateBarcode();
-            Crates.ForEach(GenerateCrateBarcode);
-        }
-        [ContextMenu("Remove Unused Crates")]
-        public void RemoveUnusedCrates()
-        {
-            foreach (var crate in Crates)
+            var crates = Crates.ToList();
+            foreach (var crate in crates)
             {
                 if (!crate) Crates.Remove(crate);
+                if (crates.IndexOf(crate) != crates.LastIndexOf(crate)) Crates.Remove(crate);
             }
-        }
-        [ContextMenu("Remove Duplicate Crates")]
-        public void RemoveDuplicateCrates()
-        {
-            foreach (var crate in Crates)
-            {
-                if (Crates.IndexOf(crate) != Crates.LastIndexOf(crate)) Crates.Remove(crate);
-            }
-        }
-        [ContextMenu("Attempt Fix Pallet")]
-        public void FixPallet()
-        {
-            GenerateBarcode();
-            SortCrates();
-            FixAllCrates();
-            RemoveUnusedCrates();
-            RemoveDuplicateCrates();
+            crates = Crates.ToList();
+            crates.Sort();
+            Crates = crates;
         }
     }
 }
