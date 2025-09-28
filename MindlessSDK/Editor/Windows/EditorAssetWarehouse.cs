@@ -1,11 +1,8 @@
 using System.Linq;
 using MindlessSDK;
-using MindlessSDK.Editor;
 using UnityEditor;
-using UnityEditor.IMGUI.Controls;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class EditorAssetWarehouse : EditorWindow
 {
@@ -33,15 +30,15 @@ public class EditorAssetWarehouse : EditorWindow
             .ToList()
             .ForEach(s =>
             {
-                GUILayout.Label(s.Title, GUILayout.Width(200));
+                GUILayout.Label(s.Title);
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button($"Open"))
-                {
-                    CurrentPallet = s;
-                }
                 if (GUILayout.Button($"Select"))
                 {
                     Selection.activeObject = s;
+                }
+                if (GUILayout.Button($"Open"))
+                {
+                    CurrentPallet = s;
                 }
                 GUILayout.EndHorizontal();
             });
@@ -53,8 +50,8 @@ public class EditorAssetWarehouse : EditorWindow
             CurrentPallet.Crates.ToList().ForEach(c =>
             {
                 if (c == null) return;
+                GUILayout.Label(c.Title);
                 GUILayout.BeginHorizontal();
-                GUILayout.Label(c.Title, GUILayout.Width(200));
                 if (GUILayout.Button($"Select"))
                 {
                     Selection.activeObject = c;

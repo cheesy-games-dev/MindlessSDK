@@ -9,6 +9,7 @@ namespace MindlessSDK
         public CrateBarcode<SpawnableCrate> barcode = new();
         public bool manual = false;
         public bool canSpawnOnce = true;
+        public bool parentToSpawner = false;
         public UltEvent<CrateSpawner, GameObject> OnSpawnedCrate;
         [HideInInspector] public GameObject spawnedCrate;
         public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && barcode.crate.CrateReference;
@@ -38,7 +39,7 @@ namespace MindlessSDK
         {
             if (canSpawn)
             {
-                var task = barcode.crate.SpawnCrate(transform.position, transform.rotation);
+                var task = AssetSpawner.Instance.Spawn(barcode.crate, transform.position, transform.rotation, parentToSpawner ? transform : null);
                 spawnedCrate = task;
                 OnSpawnedCrate?.Invoke(this, spawnedCrate);
                 Debug.Log($"Spawned crate: {barcode.crate.name}.");
@@ -94,10 +95,12 @@ namespace MindlessSDK
             }
         }
         public void OnValidate() => Validate();
-        public virtual void Validate() {
+        public virtual void Validate()
+        {
             if (barcode.crate)
                 barcode.Barcode = barcode.crate.Barcode;
             gameObject.name = $"Crate Spawner ({barcode.Barcode})";
+            AssetWarehouse.Instance.TryGetCrate<Crate>(barcode.Barcode, out var crate);
         }
     }
 }

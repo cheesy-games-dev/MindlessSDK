@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -11,21 +12,20 @@ namespace MindlessSDK
 {
     public static class AssetWarehouseExtensions
     {
-        public static Crate GetCrate(this AssetWarehouse warehouse, string barcode)
+        public static bool TryGetCrate<T>(this AssetWarehouse warehouse, string barcode, out T crate) where T : Crate
         {
-            return warehouse.Crates.LastOrDefault(c => c.Barcode == barcode);
+            crate = GetCrate<T>(warehouse, barcode);
+            return crate;
         }
-
-        public static LevelCrate GetLevelCrate(this AssetWarehouse warehouse, string barcode)
+        public static T GetCrate<T>(this AssetWarehouse warehouse, string barcode) where T : Crate
         {
-            return warehouse.LevelCrates.LastOrDefault(c => c.Barcode == barcode);
+            return (T)warehouse.Crates.LastOrDefault(c => c.Barcode == barcode && c.GetType() == typeof(T));
         }
-
-        public static SpawnableCrate GetSpawnableCrate(this AssetWarehouse warehouse, string barcode)
+        public static Pallet TryGetPallet(this AssetWarehouse warehouse, string barcode, out Pallet pallet)
         {
-            return warehouse.SpawnableCrates.LastOrDefault(c => c.Barcode == barcode);
+            pallet = GetPallet(warehouse, barcode);
+            return pallet;
         }
-
         public static Pallet GetPallet(this AssetWarehouse warehouse, string barcode)
         {
             return warehouse.Pallets.LastOrDefault(p => p.Barcode == barcode);
@@ -81,6 +81,12 @@ namespace MindlessSDK
         protected virtual void OnLoadPallet(Pallet pallet)
         {
             Pallets.Add(pallet);
+        }
+
+        [Obsolete("Use SceneManager.LoadLevel")]
+        public static void LoadLevel(LevelCrate crate)
+        {
+            SceneManager.Instance.LoadLevel(crate);
         }
     }
 }

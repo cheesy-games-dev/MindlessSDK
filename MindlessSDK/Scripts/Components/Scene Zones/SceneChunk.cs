@@ -3,6 +3,9 @@ using UnityEngine.SceneManagement;
 using UltEvents;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.ResourceManagement.ResourceProviders;
+using System.Linq;
+using Cysharp.Threading.Tasks;
 
 namespace MindlessSDK
 {
@@ -14,8 +17,8 @@ namespace MindlessSDK
         public UltEvent OnChunkLoaded;
         public UltEvent OnChunkUnloaded;
 
-        private static HashSet<string> globallyLoadedScenes = new HashSet<string>();
-        private List<string> localLoadedScenes = new List<string>();
+        private static Dictionary<string, SceneAsset> globallyLoadedScenes = new();
+        private Dictionary<string, SceneInstance> localLoadedScenes = new();
         private Dictionary<Rigidbody, bool> originalKinematicStates = new Dictionary<Rigidbody, bool>();
 
         public override void Trigger(SceneZone.TriggerOption option)
@@ -32,32 +35,18 @@ namespace MindlessSDK
 
         private IEnumerator LoadScenes()
         {
-            string[] sceneNames = streamChunk.GetSceneNames();
-            foreach (string sceneName in sceneNames)
+            foreach (var sceneAsset in streamChunk.scenes)
             {
-                if (!globallyLoadedScenes.Contains(sceneName))
+                string sceneName = sceneAsset.name;
+                if (!globallyLoadedScenes.ContainsKey(sceneName))
                 {
-                    globallyLoadedScenes.Add(sceneName);
-                    localLoadedScenes.Add(sceneName);
-                    AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
-                    asyncLoad.allowSceneActivation = false;
-
-                    // Wait until the scene is almost fully loaded
-                    while (asyncLoad.progress < 0.9f)
-                    {
-                        yield return null;
-                    }
-
-                    asyncLoad.allowSceneActivation = true;
-
-                    // Wait until the scene is fully loaded
-                    while (!asyncLoad.isDone)
-                    {
-                        yield return null;
-                    }
-
+                    globallyLoadedScenes.Add(sceneName, sceneAsset);
+                    var asyncLoad = SceneManager.Instance.LoadScene(sceneAsset, LoadSceneMode.Additive, false);
+                    yield return asyncLoad;
+                    var scene = asyncLoad.AsTask().Result;
+                    localLoadedScenes.Add(sceneName, scene);
                     // Set the kinematic states for Rigidbody objects in the loaded scene
-                    SetRigidbodiesKinematic(sceneName, false);
+                    SetRigidbodiesKinematic(scene.Scene, false);
                     OnChunkLoaded.Invoke(); // Invoke the event after loading
                     Debug.Log("Loaded Scene: " + sceneName);
                 }
@@ -66,21 +55,18 @@ namespace MindlessSDK
 
         private IEnumerator UnloadScenes()
         {
-            foreach (string sceneName in localLoadedScenes)
+            foreach (string sceneName in localLoadedScenes.Keys)
             {
-                if (globallyLoadedScenes.Contains(sceneName))
+                if (globallyLoadedScenes.ContainsKey(sceneName))
                 {
                     // Set all rigidbodies to kinematic before unloading
-                    SetRigidbodiesKinematic(sceneName, true);
+                    localLoadedScenes.TryGetValue(sceneName, out var scene);
+                    SetRigidbodiesKinematic(scene.Scene, true);
+                    var asyncUnload = SceneManager.Instance.UnloadScene(scene);
 
-                    AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync(sceneName);
+                    yield return asyncUnload;
 
-                    // Wait until the scene is fully unloaded
-                    while (!asyncUnload.isDone)
-                    {
-                        yield return null;
-                    }
-
+                    localLoadedScenes.Remove(sceneName);
                     globallyLoadedScenes.Remove(sceneName);
                     OnChunkUnloaded.Invoke(); // Invoke the event after unloading
                     Debug.Log("Unloaded Scene: " + sceneName);
@@ -89,9 +75,8 @@ namespace MindlessSDK
             localLoadedScenes.Clear();
         }
 
-        private void SetRigidbodiesKinematic(string sceneName, bool kinematic)
+        private void SetRigidbodiesKinematic(Scene scene, bool kinematic)
         {
-            Scene scene = SceneManager.GetSceneByName(sceneName);
             if (scene.isLoaded)
             {
                 GameObject[] rootObjects = scene.GetRootGameObjects();
