@@ -1,5 +1,5 @@
 {
-  "name": "com.freakycheesy.mindlesssdk",
+  "name": "com.mindless.sdk",
   "displayName": "MindlessSDK",
   "version": "1.0.0",
   "description": "Mindless SDK is a fork of the Analog SDK that works with project inspired by the Marrow SDK, Uses Addressables and UltEvents to provide a powerful and flexible modding system.",
