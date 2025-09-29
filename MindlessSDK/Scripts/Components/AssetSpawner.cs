@@ -9,6 +9,7 @@ namespace MindlessSDK
     public class AssetSpawner : MonoBehaviour
     {
         public static AssetSpawner Instance;
+        public static Action<AssetSpawner, GameObject> OnGlobalSpawnedCallback;
 
         void Start()
         {
@@ -28,6 +29,7 @@ namespace MindlessSDK
             await task;
             var result = handle.Result;
             callback?.Invoke(result);
+            OnGlobalSpawnedCallback?.Invoke(this, result);
             return result;
         }
 
