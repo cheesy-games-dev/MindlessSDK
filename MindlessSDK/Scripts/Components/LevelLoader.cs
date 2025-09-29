@@ -25,12 +25,12 @@ namespace MindlessSDK
 
             yield return new WaitForSeconds(delayBeforeLoad);
 
-            yield return SceneManager.Instance.LoadLevel(LevelCrateToLoad.crate);
+            yield return SceneManager.Instance.LoadLevel(LevelCrateToLoad.Crate);
         }
 
         public void OnValidate()
         {
-            if (LevelCrateToLoad.crate) LevelCrateToLoad.Barcode = LevelCrateToLoad.crate.Barcode;
+            if (LevelCrateToLoad.Crate) LevelCrateToLoad.Barcode = LevelCrateToLoad.Crate.Barcode;
         }
 
         public void Start()

@@ -32,18 +32,19 @@ namespace MindlessSDK
     [System.Serializable]
     public struct CrateBarcode<T> : IScannable where T : Crate
     {
-        [SerializeField] private string _barcode;
+        public string _barcode;
         public string Barcode { get => _barcode; set { _barcode = value; } }
-        public T crate;
+        public T _crate;
+        public T Crate { get => Crate; set { Crate = value; } }
         public CrateBarcode(string barcode = "", T crate = null)
         {
-            this._barcode = barcode;
-            this.crate = crate;
+            _barcode = barcode;
+            _crate = crate;
         }
         public CrateBarcode(T crate = null)
         {
             _barcode = crate.Barcode;
-            this.crate = crate;
+            _crate = crate;
         }
     }
 }

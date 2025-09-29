@@ -6,13 +6,42 @@ namespace MindlessSDK
 {
     public class CrateSpawner : MonoBehaviour, ICrateBarcode {
         public static List<CrateSpawner> CrateSpawners = new();
-        public CrateBarcode<SpawnableCrate> barcode = new();
-        public bool manual = false;
-        public bool canSpawnOnce = true;
-        public bool parentToSpawner = false;
+        #region Fields
+        public CrateBarcode<SpawnableCrate> _barcode = new();
+        public bool _manual = false;
+        public bool _canSpawnOnce = true;
+        public bool _parentToSpawner = false;
+        #endregion
+        #region Properites
+        public CrateBarcode<SpawnableCrate> Barcode
+        {
+            get => _barcode;
+            set
+            {
+                _barcode = value;
+            }
+        }
+        public bool Manual
+        {
+            get => _manual;
+            set => _manual = value;
+        }
+        public bool CanSpawnOnce
+        {
+            get => _canSpawnOnce;
+            set => _canSpawnOnce = value;
+        }
+        public bool ParentToSpawner
+        {
+            get => _parentToSpawner;
+            set => _parentToSpawner = value;
+        }
+        public bool CanSpawn => ((!spawnedCrate && CanSpawnOnce) || (!CanSpawnOnce)) && Barcode.Crate.CrateReference;
+        #endregion
+
+
         public UltEvent<CrateSpawner, GameObject> OnSpawnedCrate;
-        [HideInInspector] public GameObject spawnedCrate;
-        public bool canSpawn => ((!spawnedCrate && canSpawnOnce) || (!canSpawnOnce)) && barcode.crate.CrateReference;
+        public GameObject spawnedCrate { get; set; }
         private bool gizmoLogged = false;
         private MeshFilter meshFilter;
         private MeshRenderer meshRenderer;
@@ -22,10 +51,10 @@ namespace MindlessSDK
         {
             Validate();
             CrateSpawners.Add(this);
-            if (barcode.crate) barcode.Barcode = barcode.crate.Barcode;
+            if (Barcode.Crate) _barcode.Barcode = Barcode.Crate.Barcode;
             //AssetWarehouse.TryGetCrateByBarcode(barcode.Barcode, out Crate crate);
             //barcode.crate = crate as SpawnableCrate;
-            if (!manual && canSpawn)
+            if (!Manual && CanSpawn)
             {
                 SpawnCrate();
             }
@@ -37,22 +66,22 @@ namespace MindlessSDK
 
         public virtual GameObject SpawnCrate()
         {
-            if (canSpawn)
+            if (CanSpawn)
             {
-                var task = AssetSpawner.Instance.Spawn(barcode.crate, transform.position, transform.rotation, parentToSpawner ? transform : null);
+                var task = AssetSpawner.Instance.Spawn(Barcode.Crate, transform.position, transform.rotation, ParentToSpawner ? transform : null);
                 spawnedCrate = task;
                 OnSpawnedCrate?.Invoke(this, spawnedCrate);
-                Debug.Log($"Spawned crate: {barcode.crate.name}.");
+                Debug.Log($"Spawned crate: {Barcode.Crate.name}.");
             }
             else
             {
-                if (spawnedCrate && canSpawnOnce)
+                if (spawnedCrate && CanSpawnOnce)
                     Debug.LogWarning("A crate has already been spawned. Only one crate can be spawned.");
                 else
                     Debug.LogWarning("No crate selected or crate prefab is missing.");
             }
 
-            if (canSpawnOnce)
+            if (CanSpawnOnce)
                 Destroy(gameObject);
 
             return spawnedCrate;
@@ -72,20 +101,20 @@ namespace MindlessSDK
                 meshRenderer = combinedMeshObject.AddComponent<MeshRenderer>();
             }
 
-            meshFilter.mesh = barcode.crate.CombinedMesh;
+            meshFilter.mesh = Barcode.Crate.CombinedMesh;
 
             combinedMeshObject.transform.position = transform.position;
             combinedMeshObject.transform.rotation = transform.rotation;
         }
-
+#if UNITY_EDITOR
         public virtual void OnDrawGizmos() {
-            if (barcode.crate != null && barcode.crate.CombinedMesh != null) {
-                Gizmos.color = barcode.crate.gizmoColor;
+            if (Barcode.Crate != null && Barcode.Crate.CombinedMesh != null) {
+                Gizmos.color = Barcode.Crate.gizmoColor;
 
-                Gizmos.DrawMesh(barcode.crate.CombinedMesh, transform.position, transform.rotation);
+                Gizmos.DrawMesh(Barcode.Crate.CombinedMesh, transform.position, transform.rotation);
 
                 Gizmos.color = Color.white;
-                Bounds meshBounds = barcode.crate.CombinedMesh.bounds;
+                Bounds meshBounds = Barcode.Crate.CombinedMesh.bounds;
                 Gizmos.DrawWireCube(transform.position + meshBounds.center, meshBounds.size);
             }
 
@@ -94,13 +123,14 @@ namespace MindlessSDK
                 gizmoLogged = true;
             }
         }
+#endif
         public void OnValidate() => Validate();
         public virtual void Validate()
         {
-            if (barcode.crate)
-                barcode.Barcode = barcode.crate.Barcode;
-            gameObject.name = $"Crate Spawner ({barcode.Barcode})";
-            AssetWarehouse.Instance.TryGetCrate<Crate>(barcode.Barcode, out var crate);
+            if (Barcode.Crate)
+                _barcode.Barcode = Barcode.Crate.Barcode;
+            gameObject.name = $"Crate Spawner ({Barcode.Barcode})";
+            AssetWarehouse.Instance.TryGetCrate<Crate>(Barcode.Barcode, out var crate);
         }
     }
 }

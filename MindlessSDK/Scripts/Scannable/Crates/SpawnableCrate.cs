@@ -9,7 +9,7 @@ namespace MindlessSDK
     {
         public static void CreateCrateSpawner(SpawnableCrate spawnable)
         {
-            new GameObject($"Crate Spawner ({spawnable.Barcode})").AddComponent<CrateSpawner>().barcode = new CrateBarcode<SpawnableCrate>(spawnable.Barcode, spawnable);
+            new GameObject($"Crate Spawner ({spawnable.Barcode})").AddComponent<CrateSpawner>().Barcode = new CrateBarcode<SpawnableCrate>(spawnable.Barcode, spawnable);
         }
     }
 }
